@@ -1,0 +1,43 @@
+{
+  "name": "clamagotchi-discord-bot",
+  "version": "0.0.1",
+  "description": "a tamagotchi bot for a tamagotchi-like game",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "bun run ./api/index.js",
+    "register": "bun run ./scripts/register.js",
+    "migrate": "bun run ./scripts/migrate.js",
+    "dev": "bun --watch build ./src/api/discord.ts --outdir ./api --target node",
+    "build": "bun build ./src/api/discord.ts --outdir ./api --target node",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^0.7.0",
+    "@vercel/blob": "^0.27.1",
+    "@vercel/node": "^3.0.0",
+    "discord-interactions": "^4.1.1",
+    "discord.js": "^14.14.1",
+    "drizzle-orm": "^0.29.0"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.2",
+    "@types/node": "^20.0.0",
+    "bun-types": "latest",
+    "drizzle-kit": "^0.20.0",
+    "typescript": "^5.0.0",
+    "vercel": "^41.1.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arianra/clamagotchi-discord-bot.git"
+  },
+  "author": "aria",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/arianra/clamagotchi-discord-bot/issues"
+  },
+  "homepage": "https://github.com/arianra/clamagotchi-discord-bot#readme"
+}
