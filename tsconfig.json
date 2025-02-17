@@ -15,7 +15,11 @@
 
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["src/*"],
+      "@db/*": ["src/db/*"],
+      "@lib/*": ["src/lib/*"],
+      "@commands/*": ["src/lib/commands/*"],
+      "@scripts/*": ["scripts/*"]
     }
   },
   "include": ["src/**/*", "src/api/**/*"],

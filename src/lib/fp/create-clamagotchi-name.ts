@@ -1,6 +1,6 @@
 import { animeNameSuffixes, clamPrefixes, clamTypes } from "../constants/names";
 
-export const generateClamagotchiName = () => {
+export const createClamagotchiName = () => {
   const prefix = clamPrefixes[Math.floor(Math.random() * clamPrefixes.length)];
   const clamType = clamTypes[Math.floor(Math.random() * clamTypes.length)];
   const suffix =

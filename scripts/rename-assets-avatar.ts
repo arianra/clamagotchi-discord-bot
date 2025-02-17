@@ -1,27 +1,63 @@
-import { readdir, rename } from "node:fs/promises";
-import { extname, join } from "node:path";
+import { exists, readdir, rename } from "node:fs/promises";
+import { extname, join, parse } from "node:path";
 
-async function renumberFiles(directoryPath: string) {
+(async () => {
+  const directoryPath = "./assets/avatars";
+
   try {
-    // Read all files in directory
     const files = await readdir(directoryPath);
 
-    // Rename each file with padded zeros
-    for (let i = 0; i < files.length; i++) {
-      const oldPath = join(directoryPath, files[i]);
-      const extension = extname(files[i]); // Gets ".png", ".jpg", etc.
-      const newName = `${String(i + 1).padStart(5, "0")}${extension}`; // Creates "00001.png", etc.
+    // Only process image files
+    const validExtensions = [".png", ".jpg", ".jpeg", ".gif", ".webp"];
+    const imageFiles = files.filter((file) =>
+      validExtensions.includes(extname(file).toLowerCase())
+    );
 
-      const newPath = join(directoryPath, newName);
-
-      await rename(oldPath, newPath);
+    // Find highest existing number
+    let highestNumber = 0;
+    for (const file of imageFiles) {
+      const parsedName = parse(file);
+      // Get the part before the first dot
+      const baseNumber = parsedName.name.split(".")[0];
+      // Only consider files where the part before the first dot is entirely numbers
+      if (/^\d+$/.test(baseNumber)) {
+        const fileNumber = parseInt(baseNumber, 10);
+        highestNumber = Math.max(highestNumber, fileNumber);
+      }
     }
 
-    console.log(`Renamed ${files.length} files`);
+    // Filter files that don't have purely numeric names before the first dot
+    const unnumberedFiles = imageFiles.filter((file) => {
+      const parsedName = parse(file);
+      const baseNumber = parsedName.name.split(".")[0];
+      return !/^\d+$/.test(baseNumber);
+    });
+
+    // Rename only unnumbered files, starting after the highest number
+    let newNumber = highestNumber + 1;
+    for (const file of unnumberedFiles) {
+      const oldPath = join(directoryPath, file);
+      const extension = extname(file).toLowerCase();
+
+      // Skip files without extensions
+      if (!extension) {
+        console.warn(`Skipping file without extension: ${file}`);
+        continue;
+      }
+
+      const newName = `${String(newNumber).padStart(5, "0")}${extension}`;
+      const newPath = join(directoryPath, newName);
+
+      if (await exists(oldPath)) {
+        await rename(oldPath, newPath);
+        newNumber++;
+      }
+    }
+
+    console.log(
+      `Renamed ${unnumberedFiles.length} files, starting after number ${highestNumber}`
+    );
   } catch (error) {
     console.error("Error renaming files:", error);
   }
-}
-
-// Usage
-await renumberFiles("./assets/avatars");
+})();

@@ -8,6 +8,7 @@ import {
   pgEnum,
   bigint,
   jsonb,
+  varchar,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import {
@@ -21,17 +22,28 @@ export const personalityEnum = pgEnum("personality", DB_ENUM_PERSONALITY);
 export const genderEnum = pgEnum("gender", DB_ENUM_GENDER);
 export const maturityEnum = pgEnum("maturity", DB_ENUM_MATURITY);
 
-// Users table
-export const users = pgTable("users", {
-  id: uuid("id").primaryKey(),
-  discordId: text("discord_id"),
+// reference only
+export const users_DONT_USE = pgTable("users", {
+  id: integer("id").primaryKey(),
+  userName: varchar("userName", { length: 255 }),
+  clamness: varchar("clamness", { length: 255 }),
+  discordId: varchar("discordId", { length: 255 }),
+  striker: integer("striker"),
+  guardian: integer("guardian"),
+});
+
+// Pet Users table
+export const petUsers = pgTable("pet_users", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  discordId: varchar("discord_id", { length: 255 }).notNull().unique(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 // Pets table
 export const pets = pgTable("pets", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id")
-    .references(() => users.id)
+    .references(() => petUsers.id)
     .unique(),
   name: text("name").notNull(),
   imageUrl: text("image_url").notNull(),
@@ -54,7 +66,7 @@ export const pets = pgTable("pets", {
   intelligence: integer("intelligence").notNull().default(0),
   fitness: integer("strength").notNull().default(0),
   reflective: integer("reflexes").notNull().default(0),
-  reactiveness: integer("reactiveness").notNull().default(0),
+  reactive: integer("reactiveness").notNull().default(0),
   carapace: integer("carapace").notNull().default(0),
   regeneration: integer("regeneration").notNull().default(0),
 
@@ -95,17 +107,17 @@ export const petItems = pgTable("pet_items", {
 });
 
 // Relations
-export const usersRelations = relations(users, ({ one }) => ({
+export const petUsersRelations = relations(petUsers, ({ one }) => ({
   pet: one(pets, {
-    fields: [users.id],
+    fields: [petUsers.id],
     references: [pets.userId],
   }),
 }));
 
 export const petsRelations = relations(pets, ({ one, many }) => ({
-  user: one(users, {
+  user: one(petUsers, {
     fields: [pets.userId],
-    references: [users.id],
+    references: [petUsers.id],
   }),
   items: many(petItems),
 }));

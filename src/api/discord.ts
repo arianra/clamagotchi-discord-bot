@@ -9,6 +9,8 @@ import {
   respondUnknown,
   setResponseHeaders,
 } from "@/lib/responses/request";
+import { start } from "@/lib/commands/start/start";
+import { respond, respondError } from "@/lib/responses/generic-response";
 
 export default async (request: VercelRequest, response: VercelResponse) => {
   if (request.method !== "POST") {
@@ -30,5 +32,14 @@ export default async (request: VercelRequest, response: VercelResponse) => {
 
   if (message.type === InteractionType.PING) {
     return respondPong(response);
+  }
+
+  if (message.data.name === "start") {
+    try {
+      const startResponse = await start(message);
+      return respond(response, startResponse);
+    } catch (error) {
+      return respond(response, respondError(error));
+    }
   }
 };

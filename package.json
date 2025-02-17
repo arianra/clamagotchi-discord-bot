@@ -6,13 +6,14 @@
   "type": "module",
   "scripts": {
     "start": "bun run ./api/index.js",
-    "register": "bun run ./scripts/register.js",
-    "migrate": "bun run ./scripts/migrate.js",
+    "register": "bun run ./scripts/register-discord-slash-commands.ts",
+    "migrate": "bun run ./scripts/migrate.ts",
     "dev": "bun --watch build ./src/api/discord.ts --outdir ./api --target node",
     "build": "bun build ./src/api/discord.ts --outdir ./api --target node",
     "db:generate": "drizzle-kit generate",
-    "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:push": "drizzle-kit push:pg",
+    "db:studio": "drizzle-kit studio",
+    "rename-assets": "bun run ./scripts/rename-assets-avatar.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.7.0",

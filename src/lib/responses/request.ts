@@ -1,6 +1,7 @@
 import { VercelResponse } from "@vercel/node";
 import { InteractionResponseType } from "discord-interactions";
 import { version } from "../../../package.json" assert { type: "json" };
+import { fetchRandomAvatarUrl } from "../fp/fetch-random-avatar-url";
 
 export const setResponseHeaders = (response: VercelResponse) => {
   response.setHeader("Content-Type", "application/json");
@@ -10,8 +11,14 @@ export const setResponseHeaders = (response: VercelResponse) => {
   );
 };
 
-export const respondInfo = (response: VercelResponse) => {
-  return response.status(412).json(`Clamagotchi Discord Bot v${version}`);
+export const respondInfo = async (response: VercelResponse) => {
+  const randomClamUrl = await fetchRandomAvatarUrl();
+  return response
+    .status(412)
+    .json(
+      `<p>Clamagotchi Discord Bot v${version}</p>` +
+        `<img src="${randomClamUrl}" alt="Clamagotchi avatar" />`
+    );
 };
 
 export const respondPong = (response: VercelResponse) => {
