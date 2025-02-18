@@ -14,7 +14,7 @@ export const setResponseHeaders = (response: VercelResponse) => {
 export const respondInfo = async (response: VercelResponse) => {
   const randomClamUrl = await fetchRandomAvatarUrl();
   return response
-    .status(412)
+    .status(200)
     .send(
       `<!DOCTYPE html>` +
         `<html><body>` +
