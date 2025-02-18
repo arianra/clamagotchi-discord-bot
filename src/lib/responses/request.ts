@@ -16,9 +16,11 @@ export const respondInfo = async (response: VercelResponse) => {
   return response
     .status(412)
     .send(
-      `<body><p>Clamagotchi Discord Bot v${version}</p>` +
+      `<!DOCTYPE html>` +
+        `<html><body>` +
+        `<p>Clamagotchi Discord Bot v${version}</p>` +
         `<img src="${randomClamUrl}" alt="Clamagotchi avatar" />` +
-        `</body>`
+        `</body></html>`
     );
 };
 
