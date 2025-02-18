@@ -16533,13 +16533,10 @@ var verifyDiscordKey = (request) => {
 };
 
 // src/api/discord.ts
-var import_discord_interactions3 = __toESM(require_dist(), 1);
+var import_discord_interactions4 = __toESM(require_dist(), 1);
 
 // src/lib/responses/request.ts
 var import_discord_interactions2 = __toESM(require_dist(), 1);
-// package.json
-var version = "0.0.1";
-
 // node_modules/is-node-process/lib/index.mjs
 function isNodeProcess() {
   if (typeof navigator !== "undefined" && navigator.product === "ReactNative") {
@@ -17743,14 +17740,6 @@ var fetchRandomAvatarUrl = async () => {
 };
 
 // src/lib/responses/request.ts
-var setResponseHeaders = (response) => {
-  response.setHeader("Content-Type", "application/json");
-  response.setHeader("User-Agent", `DiscordBot (clamagotchi-discord-bot.vercel.app, ${version})`);
-};
-var respondInfo = async (response) => {
-  const randomClamUrl = await fetchRandomAvatarUrl();
-  return response.status(200).send(`<!DOCTYPE html>` + `<html><body>` + `<p>Clamagotchi Discord Bot v${version}</p>` + `<img src="${randomClamUrl}" alt="Clamagotchi avatar" />` + `</body></html>`);
-};
 var respondPong = (response) => {
   console.info("Handling Ping request");
   return response.status(200).json({
@@ -25892,7 +25881,6 @@ function drizzle(client, config = {}) {
 // src/db/schema.ts
 var exports_schema = {};
 __export(exports_schema, {
-  users_DONT_USE: () => users_DONT_USE,
   petsRelations: () => petsRelations,
   pets: () => pets,
   petUsersRelations: () => petUsersRelations,
@@ -25946,14 +25934,6 @@ var DB_ENUM_MATURITY = [
 var personalityEnum = pgEnum("personality", DB_ENUM_PERSONALITY);
 var genderEnum = pgEnum("gender", DB_ENUM_GENDER);
 var maturityEnum = pgEnum("maturity", DB_ENUM_MATURITY);
-var users_DONT_USE = pgTable("users", {
-  id: integer("id").primaryKey(),
-  userName: varchar("userName", { length: 255 }),
-  clamness: varchar("clamness", { length: 255 }),
-  discordId: varchar("discordId", { length: 255 }),
-  striker: integer("striker"),
-  guardian: integer("guardian")
-});
 var petUsers = pgTable("pet_users", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),
   discordId: varchar("discord_id", { length: 255 }).notNull().unique(),
@@ -26200,8 +26180,6 @@ var clamTypes = [
   "Giant",
   "Pacific",
   "Atlantic",
-  "Soft-Shell",
-  "Hard-Shell",
   "Blood",
   "Surf",
   "Bean",
@@ -26313,6 +26291,7 @@ function formatPhysicalStats(stats) {
 }
 
 // src/lib/responses/generic-response.ts
+var import_discord_interactions3 = __toESM(require_dist(), 1);
 function respondSuccess(message) {
   return {
     success: true,
@@ -26368,7 +26347,7 @@ Personality: ${pet.personality}
 Maturity: ${pet.maturity}
 Gender: ${pet.gender}
 
-## BasicStats
+### BasicStats
 - Hunger: ${pet.hunger}
 - Thirst: ${pet.thirst}
 - Health: ${pet.health}
@@ -26376,7 +26355,7 @@ Gender: ${pet.gender}
 - Tiredness: ${pet.tiredness}
 - Hygiene: ${pet.hygiene}
 
-## Physical Stats
+### Physical Stats
 - Intelligence: ${pet.intelligence} 
 - Fitness: ${pet.fitness}
 - Reflective: ${pet.reflective}
@@ -26384,7 +26363,7 @@ Gender: ${pet.gender}
 - Carapace: ${pet.carapace}
 - Regeneration: ${pet.regeneration} 
 
-## Last Actions
+### Last Actions
 - Last Fed: ${pet.lastFed}
 - Last Clapped: ${pet.lastDrank}`;
 };
@@ -26396,13 +26375,10 @@ async function start(message) {
   if (!discordId) {
     return respondError("Something went wrong while creating your Clamagotchi, seems there's no discord ID?");
   }
-  console.log("discordId", discordId);
   try {
-    console.log("discordId 1", discordId);
     let user = await db.query.petUsers.findFirst({
       where: eq(petUsers.discordId, discordId)
     });
-    console.log("user 1", user);
     if (!user) {
       const [newUser] = await db.insert(petUsers).values({
         discordId,
@@ -26410,21 +26386,28 @@ async function start(message) {
       }).returning();
       user = newUser;
     }
-    console.log("user 2", user);
     if (!user) {
       return respondError("Something went wrong while creating your user associated with your pet...");
     }
     const existingPet = await db.query.pets.findFirst({
       where: eq(pets.userId, user.id)
     });
-    console.log("existingPet", existingPet);
     if (existingPet) {
       return respondError(`You already have a Clamagotchi! Use \`/info\` to see their status.
 
-${formatInfo(existingPet)}`);
+${formatInfo(existingPet, discordId)}`);
     }
     const petName = name || await createClamagotchiName();
     const imageUrl = await fetchRandomAvatarUrl();
+    const stats = distributeRandomPhysicalStats(25);
+    console.log("stats", stats);
+    console.log("petName", petName);
+    console.log("imageUrl", imageUrl);
+    return respondSuccess({
+      stats,
+      petName,
+      imageUrl
+    });
     const [newPet] = await db.insert(pets).values({
       userId: user.id,
       name: petName,
@@ -26439,6 +26422,11 @@ Your new pet has arrived!
 
 ${imageUrl}
 
+## Characteristics
+Personality: ${newPet.personality}
+Maturity: ${newPet.maturity}
+Gender: ${newPet.gender}
+
 ### Stats
 ${formatPhysicalStats(newPet)}
 
@@ -26452,11 +26440,6 @@ Use \`/info\` to check on ${petName}'s status and \`/help\` to learn how to care
 
 // src/api/discord.ts
 var discord_default = async (request, response) => {
-  if (request.method !== "POST") {
-    response.setHeader("Content-Type", "text/html");
-    return respondInfo(response);
-  }
-  setResponseHeaders(response);
   const isValidRequest = await verifyDiscordKey(request);
   if (!isValidRequest) {
     return respondInvalid(response);
@@ -26465,14 +26448,18 @@ var discord_default = async (request, response) => {
   if (!(message || message.type || message.data || message.data.name)) {
     return respondUnknown(response, message);
   }
-  if (message.type === import_discord_interactions3.InteractionType.PING) {
+  if (message.type === import_discord_interactions4.InteractionType.PING) {
     return respondPong(response);
   }
-  if (message.type === import_discord_interactions3.InteractionType.APPLICATION_COMMAND) {
-    response.status(200).json({
-      type: 5,
+  if (message.data.name === "start") {
+    const petName = createClamagotchiName();
+    const imageUrl = await fetchRandomAvatarUrl();
+    console.log("petName", petName);
+    return response.status(200).json({
+      type: import_discord_interactions4.InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        flags: 64
+        content: `# Pet name: ${petName}`,
+        embeds: [{ image: { url: imageUrl } }]
       }
     });
   }

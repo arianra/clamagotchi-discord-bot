@@ -22,16 +22,6 @@ export const personalityEnum = pgEnum("personality", DB_ENUM_PERSONALITY);
 export const genderEnum = pgEnum("gender", DB_ENUM_GENDER);
 export const maturityEnum = pgEnum("maturity", DB_ENUM_MATURITY);
 
-// reference only
-export const users_DONT_USE = pgTable("users", {
-  id: integer("id").primaryKey(),
-  userName: varchar("userName", { length: 255 }),
-  clamness: varchar("clamness", { length: 255 }),
-  discordId: varchar("discordId", { length: 255 }),
-  striker: integer("striker"),
-  guardian: integer("guardian"),
-});
-
 // Pet Users table
 export const petUsers = pgTable("pet_users", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),

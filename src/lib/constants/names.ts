@@ -178,8 +178,6 @@ export const clamTypes = [
   "Giant",
   "Pacific",
   "Atlantic",
-  "Soft-Shell",
-  "Hard-Shell",
   "Blood",
   "Surf",
   "Bean",

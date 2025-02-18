@@ -9,15 +9,22 @@ import {
   setResponseHeaders,
 } from "@/lib/responses/request";
 import { start } from "@/lib/commands/start/start";
-import { respond, respondError } from "@/lib/responses/generic-response";
+import {
+  respond,
+  respondError,
+  respondSuccess,
+} from "@/lib/responses/generic-response";
+import { MessageFlags } from "discord.js";
+import { createClamagotchiName } from "@/lib/fp/create-clamagotchi-name";
+import { fetchRandomAvatarUrl } from "@/lib/fp/fetch-random-avatar-url";
 
 export default async (request: VercelRequest, response: VercelResponse) => {
-  if (request.method !== "POST") {
-    response.setHeader("Content-Type", "text/html");
-    return respondInfo(response);
-  }
+  // if (request.method !== "POST") {
+  //   response.setHeader("Content-Type", "text/html");
+  //   return respondInfo(response);
+  // }
 
-  setResponseHeaders(response);
+  // setResponseHeaders(response);
 
   const isValidRequest = await verifyDiscordKey(request);
   if (!isValidRequest) {
@@ -34,24 +41,32 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     return respondPong(response);
   }
 
-  // return response.status(200).json({
-  //   type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-  //   data: "skill issue tbh",
-  // });
-
-  if (message.type === InteractionType.APPLICATION_COMMAND) {
-    response.status(200).json({
-      type: 5,
+  if (message.data.name === "start") {
+    const petName = createClamagotchiName();
+    const imageUrl = await fetchRandomAvatarUrl();
+    console.log("petName", petName);
+    return response.status(200).json({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        flags: 64,
+        content: `# Pet name: ${petName}`,
+        embeds: [{ image: { url: imageUrl } }],
       },
     });
   }
 
+  // if (message.type === InteractionType.APPLICATION_COMMAND) {
+  //   response.status(200).json({
+  //     type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
+  //     data: {
+  //       flags: MessageFlags.Ephemeral,
+  //     },
+  //   });
+  // }
+
   // return await fetch(
-  //   `https://discord.com/api/v10/webhooks/${message.application_id}/${message.token}/messages/@original`,
+  //   `https://discord.com/api/v10/webhooks/${message.application_id}/${message.token}`,
   //   {
-  //     method: "PATCH",
+  //     method: "POST",
   //     headers: {
   //       "Content-Type": "application/json",
   //       "User-Agent": "DiscordBot (clamagotchi-discord-bot.vercel.app, 1.0.0)",

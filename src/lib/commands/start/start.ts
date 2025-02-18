@@ -25,14 +25,11 @@ export async function start(message: Message): Promise<APIResponse> {
       "Something went wrong while creating your Clamagotchi, seems there's no discord ID?"
     );
   }
-  console.log("discordId", discordId);
   try {
     // Find or create user
-    console.log("discordId 1", discordId);
     let user = await db.query.petUsers.findFirst({
       where: eq(petUsers.discordId, discordId),
     });
-    console.log("user 1", user);
     if (!user) {
       const [newUser] = await db
         .insert(petUsers)
@@ -43,7 +40,6 @@ export async function start(message: Message): Promise<APIResponse> {
         .returning();
       user = newUser;
     }
-    console.log("user 2", user);
     if (!user) {
       return respondError(
         "Something went wrong while creating your user associated with your pet..."
@@ -53,7 +49,6 @@ export async function start(message: Message): Promise<APIResponse> {
     const existingPet = await db.query.pets.findFirst({
       where: eq(pets.userId, user.id),
     });
-    console.log("existingPet", existingPet);
     if (existingPet) {
       return respondError(
         `You already have a Clamagotchi! Use \`/info\` to see their status.\n\n${formatInfo(
@@ -65,6 +60,16 @@ export async function start(message: Message): Promise<APIResponse> {
     // Get custom name if provided, otherwise generate one
     const petName = name || (await createClamagotchiName());
     const imageUrl = await fetchRandomAvatarUrl();
+
+    const stats = distributeRandomPhysicalStats(25);
+    console.log("stats", stats);
+    console.log("petName", petName);
+    console.log("imageUrl", imageUrl);
+    return respondSuccess({
+      stats,
+      petName,
+      imageUrl,
+    });
 
     // Create new pet with random stats
     const [newPet] = await db
@@ -86,6 +91,11 @@ Your new pet has arrived!
 ## Meet ${petName}! ${EMOJI_CLAM_SPARKLE}
 
 ${imageUrl}
+
+## Characteristics
+Personality: ${newPet.personality}
+Maturity: ${newPet.maturity}
+Gender: ${newPet.gender}
 
 ### Stats
 ${formatPhysicalStats(newPet)}

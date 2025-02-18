@@ -1,4 +1,5 @@
 import { VercelResponse } from "@vercel/node";
+import { InteractionResponseType } from "discord-interactions";
 
 export interface APIResponse {
   success: boolean;
@@ -25,7 +26,14 @@ export const respond = (
 ): VercelResponse => {
   const errorCode = responseMessage.success ? 200 : 400;
   const { message } = responseMessage;
-  if (!message)
-    return response.status(errorCode).json("response is not the correct shape");
-  return response.status(errorCode).json(message);
+  if (!message) {
+    return response.status(errorCode).json({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: { content: "response is not the correct shape" },
+    });
+  }
+  return response.status(errorCode).json({
+    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+    data: { content: message },
+  });
 };
