@@ -14,7 +14,7 @@ import { respond, respondError } from "@/lib/responses/generic-response";
 
 export default async (request: VercelRequest, response: VercelResponse) => {
   if (request.method !== "POST") {
-    response.setHeader("Content-Type", "application/html");
+    response.setHeader("Content-Type", "text/html");
     return respondInfo(response);
   }
 

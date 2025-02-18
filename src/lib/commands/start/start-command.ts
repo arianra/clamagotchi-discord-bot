@@ -4,7 +4,7 @@ export const START_COMMAND = {
   options: [
     {
       name: "name",
-      description: "The name of your Clamagotchi pet.",
+      description: "The name of your Clamagotchi.",
       type: 3,
       required: false,
     },
