@@ -15,7 +15,7 @@ export const respondInfo = async (response: VercelResponse) => {
   const randomClamUrl = await fetchRandomAvatarUrl();
   return response
     .status(412)
-    .json(
+    .send(
       `<body><p>Clamagotchi Discord Bot v${version}</p>` +
         `<img src="${randomClamUrl}" alt="Clamagotchi avatar" />` +
         `</body>`
