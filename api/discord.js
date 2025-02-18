@@ -17749,7 +17749,7 @@ var setResponseHeaders = (response) => {
 };
 var respondInfo = async (response) => {
   const randomClamUrl = await fetchRandomAvatarUrl();
-  return response.status(412).json(`<p>Clamagotchi Discord Bot v${version}</p>` + `<img src="${randomClamUrl}" alt="Clamagotchi avatar" />`);
+  return response.status(200).send(`<!DOCTYPE html>` + `<html><body>` + `<p>Clamagotchi Discord Bot v${version}</p>` + `<img src="${randomClamUrl}" alt="Clamagotchi avatar" />` + `</body></html>`);
 };
 var respondPong = (response) => {
   console.info("Handling Ping request");
@@ -26325,13 +26325,6 @@ function respondError(message) {
     message
   };
 }
-var respond = (response, responseMessage) => {
-  const errorCode = responseMessage.success ? 200 : 400;
-  const { message } = responseMessage;
-  if (!message)
-    return response.status(errorCode).json("response is not the correct shape");
-  return response.status(errorCode).json(message);
-};
 
 // src/lib/constants/emojis.ts
 var EMOJI_CLAM = "\uD83E\uDDAA";
@@ -26359,12 +26352,57 @@ var distributeRandomPhysicalStats = (points = 0) => {
   return stats;
 };
 
+// src/lib/fp/format/format-info.ts
+var formatInfo = (pet, discordId) => {
+  return `${pet.imageUrl}
+# Clamagotchi Info
+Name: ${pet.name}
+Owner: <@${discordId}>
+
+Level: ${pet.level}
+Experience: ${pet.experience}
+Pearls: ${pet.pearls}
+
+## Characteristics
+Personality: ${pet.personality}
+Maturity: ${pet.maturity}
+Gender: ${pet.gender}
+
+## BasicStats
+- Hunger: ${pet.hunger}
+- Thirst: ${pet.thirst}
+- Health: ${pet.health}
+- Affection: ${pet.affection}
+- Tiredness: ${pet.tiredness}
+- Hygiene: ${pet.hygiene}
+
+## Physical Stats
+- Intelligence: ${pet.intelligence} 
+- Fitness: ${pet.fitness}
+- Reflective: ${pet.reflective}
+- Reactive: ${pet.reactive}
+- Carapace: ${pet.carapace}
+- Regeneration: ${pet.regeneration} 
+
+## Last Actions
+- Last Fed: ${pet.lastFed}
+- Last Clapped: ${pet.lastDrank}`;
+};
+
 // src/lib/commands/start/start.ts
-async function start(discordId, name) {
+async function start(message) {
+  const discordId = message?.member?.user.id;
+  const name = null;
+  if (!discordId) {
+    return respondError("Something went wrong while creating your Clamagotchi, seems there's no discord ID?");
+  }
+  console.log("discordId", discordId);
   try {
+    console.log("discordId 1", discordId);
     let user = await db.query.petUsers.findFirst({
       where: eq(petUsers.discordId, discordId)
     });
+    console.log("user 1", user);
     if (!user) {
       const [newUser] = await db.insert(petUsers).values({
         discordId,
@@ -26372,14 +26410,18 @@ async function start(discordId, name) {
       }).returning();
       user = newUser;
     }
+    console.log("user 2", user);
     if (!user) {
       return respondError("Something went wrong while creating your user associated with your pet...");
     }
     const existingPet = await db.query.pets.findFirst({
       where: eq(pets.userId, user.id)
     });
+    console.log("existingPet", existingPet);
     if (existingPet) {
-      return respondError("You already have a Clamagotchi! Use `/info` to see their status.");
+      return respondError(`You already have a Clamagotchi! Use \`/info\` to see their status.
+
+${formatInfo(existingPet)}`);
     }
     const petName = name || await createClamagotchiName();
     const imageUrl = await fetchRandomAvatarUrl();
@@ -26411,13 +26453,14 @@ Use \`/info\` to check on ${petName}'s status and \`/help\` to learn how to care
 // src/api/discord.ts
 var discord_default = async (request, response) => {
   if (request.method !== "POST") {
+    response.setHeader("Content-Type", "text/html");
     return respondInfo(response);
   }
+  setResponseHeaders(response);
   const isValidRequest = await verifyDiscordKey(request);
   if (!isValidRequest) {
     return respondInvalid(response);
   }
-  setResponseHeaders(response);
   const message = request.body;
   if (!(message || message.type || message.data || message.data.name)) {
     return respondUnknown(response, message);
@@ -26425,12 +26468,39 @@ var discord_default = async (request, response) => {
   if (message.type === import_discord_interactions3.InteractionType.PING) {
     return respondPong(response);
   }
+  if (message.type === import_discord_interactions3.InteractionType.APPLICATION_COMMAND) {
+    response.status(200).json({
+      type: 5,
+      data: {
+        flags: 64
+      }
+    });
+  }
   if (message.data.name === "start") {
+    console.log(`Start command received by user id: ${message.member.user.username}`);
     try {
       const startResponse = await start(message);
-      return respond(response, startResponse);
+      console.log("startResponse", startResponse.message);
+      return await fetch(`https://discord.com/api/v10/webhooks/${message.application_id}/${message.token}/messages/@original`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          content: startResponse.message
+        })
+      });
     } catch (error) {
-      return respond(response, respondError(error));
+      console.error("Error in start command:", error);
+      return await fetch(`https://discord.com/api/v10/webhooks/${message.application_id}/${message.token}/messages/@original`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          content: "Something went wrong while creating your pet. Please try again later."
+        })
+      });
     }
   }
 };
