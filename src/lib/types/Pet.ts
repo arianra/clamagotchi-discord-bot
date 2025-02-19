@@ -1,4 +1,6 @@
-export type Pet = {
+import { PhysicalStats } from "./PhysicalStats";
+
+export type Pet = PhysicalStats & {
   id: string;
   userId: string;
   name: string;
@@ -13,12 +15,7 @@ export type Pet = {
   affection: number;
   tiredness: number;
   hygiene: number;
-  intelligence: number;
-  fitness: number;
-  reflective: number;
-  reactive: number;
-  carapace: number;
-  regeneration: number;
+
   level: number;
   experience: number;
   lastFed: Date;

@@ -10,7 +10,10 @@ import {
   APIResponse,
 } from "@lib/responses/generic-response";
 import { EMOJI_CLAM_SPARKLE } from "@/lib/constants/emojis";
-import { distributeRandomPhysicalStats } from "@lib/fp/levelling/distribute-random-physical-stats";
+import {
+  asPositivePoints,
+  distributeRandomPhysicalStats,
+} from "@lib/fp/levelling/distribute-random-physical-stats";
 import { Message } from "discord.js";
 import { formatInfo } from "@/lib/fp/format/format-info";
 import { Pet } from "@/lib/types/Pet";
@@ -61,7 +64,7 @@ export async function start(message: Message): Promise<APIResponse> {
     const petName = name || (await createClamagotchiName());
     const imageUrl = await fetchRandomAvatarUrl();
 
-    const stats = distributeRandomPhysicalStats(25);
+    const stats = distributeRandomPhysicalStats(asPositivePoints(25));
     console.log("stats", stats);
     console.log("petName", petName);
     console.log("imageUrl", imageUrl);
@@ -78,7 +81,7 @@ export async function start(message: Message): Promise<APIResponse> {
         userId: user.id,
         name: petName,
         imageUrl,
-        ...distributeRandomPhysicalStats(),
+        ...distributeRandomPhysicalStats(asPositivePoints(25)),
         // Other fields use schema defaults
       })
       .returning();
@@ -100,7 +103,7 @@ Gender: ${newPet.gender}
 ### Stats
 ${formatPhysicalStats(newPet)}
 
-Use \`/info\` to check on ${petName}'s status and \`/help\` to learn how to care for them!`;
+Use <@info:1341627143934836756> to check on ${petName}'s status and \`/help\` to learn how to care for them!`;
 
     return respondSuccess(response);
   } catch (error) {

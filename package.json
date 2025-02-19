@@ -9,20 +9,27 @@
     "register": "bun run ./scripts/register-discord-slash-commands.ts",
     "migrate": "bun run ./scripts/migrate.ts",
     "dev:api": "vercel dev",
-    "dev:bun": "bun --watch build ./src/api/discord.ts --outdir ./api --target node",
-    "build": "bun build ./src/api/discord.ts --outdir ./api --target node",
+    "dev:api-debug": "vercel dev --debug",
+    "dev:bun": "bun --watch build ./src/api/* --outdir ./api --target node",
+    "build": "bun build ./src/api/* --outdir ./api --target node",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push:pg",
     "db:studio": "drizzle-kit studio",
-    "rename-assets": "bun run ./scripts/rename-assets-avatar.ts"
+    "rename-assets": "bun run ./scripts/rename-assets-avatar.ts",
+    "get-commands": "bun run scripts/get-slash-commands.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.7.0",
     "@vercel/blob": "^0.27.1",
+    "@vercel/fetch": "^7.0.0",
     "@vercel/node": "^3.0.0",
+    "axios": "^1.7.9",
     "discord-interactions": "^4.1.1",
     "discord.js": "^14.14.1",
-    "drizzle-orm": "^0.29.0"
+    "drizzle-orm": "^0.29.0",
+    "isomorphic-fetch": "^3.0.0",
+    "node-fetch": "2",
+    "undici": "^7.3.0"
   },
   "devDependencies": {
     "@types/bun": "^1.2.2",

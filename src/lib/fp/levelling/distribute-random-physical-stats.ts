@@ -1,9 +1,19 @@
 import { PhysicalStats } from "../../types/PhysicalStats";
 
-export const distributeRandomPhysicalStats = (
-  points: number = 0
-): PhysicalStats | null => {
-  if (points < 1) return null;
+// Create a unique symbol for the brand
+declare const PositiveNumber: unique symbol;
+type PositiveNumber = number & { readonly [PositiveNumber]: never };
+
+// Function overloads
+export function distributeRandomPhysicalStats(): null;
+export function distributeRandomPhysicalStats(
+  points: PositiveNumber
+): PhysicalStats;
+export function distributeRandomPhysicalStats(points: 0): null;
+export function distributeRandomPhysicalStats(
+  points?: number
+): PhysicalStats | null {
+  if (!points || points < 1) return null;
 
   const stats: PhysicalStats = {
     intelligence: 0,
@@ -25,4 +35,9 @@ export const distributeRandomPhysicalStats = (
   }
 
   return stats;
+}
+
+export const asPositivePoints = (n: number): PositiveNumber => {
+  if (n <= 0) throw new Error("Points must be positive");
+  return n as PositiveNumber;
 };

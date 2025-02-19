@@ -1,3 +1,4 @@
+import { INFO_COMMAND } from "../src/lib/commands/info/info-command";
 import { START_COMMAND } from "../src/lib/commands/start/start-command";
 
 console.log(`PUBLIC_KEY: ${process.env.PUBLIC_KEY}`);
@@ -11,7 +12,7 @@ console.log(`PUBLIC_KEY: ${process.env.PUBLIC_KEY}`);
         Authorization: `Bot ${process.env.TOKEN}`,
       },
       method: "PUT",
-      body: JSON.stringify([START_COMMAND]),
+      body: JSON.stringify([START_COMMAND, INFO_COMMAND]),
     }
   );
 

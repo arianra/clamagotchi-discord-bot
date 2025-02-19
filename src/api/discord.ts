@@ -7,7 +7,7 @@ import {
   respondPong,
   respondUnknown,
   setResponseHeaders,
-} from "@/lib/responses/request";
+} from "@/lib/responses/handshake";
 import { start } from "@/lib/commands/start/start";
 import {
   respond,
@@ -17,14 +17,23 @@ import {
 import { MessageFlags } from "discord.js";
 import { createClamagotchiName } from "@/lib/fp/create-clamagotchi-name";
 import { fetchRandomAvatarUrl } from "@/lib/fp/fetch-random-avatar-url";
+import { formatTest } from "@/lib/fp/format/format-test";
+import { sendFollowUp } from "@/lib/responses/send-follow-up";
+import { formatEmbedInfoGeneral } from "@/lib/fp/format/embed/info-general";
+import { formatEmbedInfoStats } from "@/lib/fp/format/embed/info-stats";
+import { formatEmbedInfoImage } from "@/lib/fp/format/embed/info-image";
+import { info } from "@/lib/commands/info/info";
+import { formatMessageInfoCommand } from "@/lib/fp/format/discord-message-formats/format-message-info-command";
+import { sendWebhookResponse } from "@/lib/responses/send-webhook-response";
+import { sendDeferredResponse } from "@/lib/responses/send-deferred-response";
 
 export default async (request: VercelRequest, response: VercelResponse) => {
-  // if (request.method !== "POST") {
-  //   response.setHeader("Content-Type", "text/html");
-  //   return respondInfo(response);
-  // }
+  if (request.method !== "POST") {
+    response.setHeader("Content-Type", "text/html");
+    return respondInfo(response);
+  }
 
-  // setResponseHeaders(response);
+  setResponseHeaders(response);
 
   const isValidRequest = await verifyDiscordKey(request);
   if (!isValidRequest) {
@@ -41,79 +50,18 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     return respondPong(response);
   }
 
+  if (message.data.name === "info") {
+    return info(request, response);
+  }
+
   if (message.data.name === "start") {
-    const petName = createClamagotchiName();
-    const imageUrl = await fetchRandomAvatarUrl();
-    console.log("petName", petName);
+    console.info("Start Command received.");
+
     return response.status(200).json({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        content: `# Pet name: ${petName}`,
-        embeds: [{ image: { url: imageUrl } }],
+        content: `use ${formatMessageInfoCommand()} for now.`,
       },
     });
-  }
-
-  // if (message.type === InteractionType.APPLICATION_COMMAND) {
-  //   response.status(200).json({
-  //     type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
-  //     data: {
-  //       flags: MessageFlags.Ephemeral,
-  //     },
-  //   });
-  // }
-
-  // return await fetch(
-  //   `https://discord.com/api/v10/webhooks/${message.application_id}/${message.token}`,
-  //   {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       "User-Agent": "DiscordBot (clamagotchi-discord-bot.vercel.app, 1.0.0)",
-  //     },
-  //     body: JSON.stringify({
-  //       content: "SKILL ISSUE",
-  //     }),
-  //   }
-  // ).catch((error) => {
-  //   console.error("Error editing reply:", error);
-  //   throw error;
-  // });
-
-  if (message.data.name === "start") {
-    console.log(
-      `Start command received by user id: ${message.member.user.username}`
-    );
-    try {
-      const startResponse = await start(message);
-      console.log("startResponse", startResponse.message);
-      return await fetch(
-        `https://discord.com/api/v10/webhooks/${message.application_id}/${message.token}/messages/@original`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            content: startResponse.message,
-          }),
-        }
-      );
-    } catch (error) {
-      console.error("Error in start command:", error);
-      return await fetch(
-        `https://discord.com/api/v10/webhooks/${message.application_id}/${message.token}/messages/@original`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            content:
-              "Something went wrong while creating your pet. Please try again later.",
-          }),
-        }
-      );
-    }
   }
 };
