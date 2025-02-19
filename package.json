@@ -16,6 +16,7 @@
     "db:push": "drizzle-kit push:pg",
     "db:studio": "drizzle-kit studio",
     "rename-assets": "bun run ./scripts/rename-assets-avatar.ts",
+    "renumber-assets": "bun run ./scripts/renumber-assets-avatar.ts",
     "get-commands": "bun run scripts/get-slash-commands.ts"
   },
   "dependencies": {
