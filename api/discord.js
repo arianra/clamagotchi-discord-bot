@@ -96832,50 +96832,60 @@ async function start(request, response) {
   }
 }
 
-// src/lib/fp/format/embed/info-stats.ts
-var import_discord3 = __toESM(require_src(), 1);
-
-// src/lib/fp/format/format-physical-stats.ts
-function formatPhysicalStats(stats) {
-  return `\uD83E\uDDE0 Intelligence: **${stats.intelligence}** ◇ ` + `\uD83C\uDF1F Fitness: **${stats.fitness}** ◇ ` + `⚡ Reflexes: **${stats.reflective}** ◇ ` + `\uD83C\uDFAF Reactiveness: **${stats.reactive}** ◇ ` + `\uD83D\uDEE1️ Carapace: **${stats.carapace}** ◇ ` + `❤️ Regeneration: **${stats.regeneration}**`;
-}
-
-// src/lib/fp/format/embed/info-stats.ts
-var formatEmbedInfoStats = (pet) => {
-  return new import_discord3.EmbedBuilder().setColor(getRandomColor(700)).setTitle(`Stats`).addFields({
-    name: "Condition",
-    value: [
-      `hunger: **1**`,
-      `thirst: **2**`,
-      `health: **3**`,
-      `affection: **4**`,
-      `tiredness: **5**`,
-      `hygiene: **6**`
-    ].join(" ◇ "),
-    inline: false
-  }, {
-    name: "Physical Stats",
-    value: formatPhysicalStats(distributeRandomPhysicalStats(asPositivePoints(25))),
-    inline: false
-  }).toJSON();
-};
-
 // src/lib/commands/info/info.ts
 var import_discord_interactions5 = __toESM(require_dist(), 1);
 var info = async (request, response) => {
-  console.info("Info Command received");
-  const petName = createClamagotchiName();
-  const imageUrl = await fetchRandomAvatarUrl();
-  return response.status(200).json({
-    type: import_discord_interactions5.InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-    data: {
-      embeds: [
-        formatEmbedInfoGeneral({ name: petName, imageUrl }),
-        formatEmbedInfoStats({ name: petName, imageUrl }),
-        formatEmbedInfoImage({ name: petName, imageUrl })
-      ]
+  const message = request.body;
+  const discordId = message?.member?.user.id;
+  if (!discordId) {
+    return response.status(200).json({
+      type: import_discord_interactions5.InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        content: "Could not find your Discord ID."
+      }
+    });
+  }
+  try {
+    const user = await db.query.petUsers.findFirst({
+      where: eq(petUsers.discordId, discordId)
+    });
+    if (!user) {
+      return response.status(200).json({
+        type: import_discord_interactions5.InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          content: "You don't have a Clamagotchi yet! Use `/start` to create one."
+        }
+      });
     }
-  });
+    const pet = await db.query.pets.findFirst({
+      where: eq(pets.userId, user.id)
+    });
+    if (!pet) {
+      return response.status(200).json({
+        type: import_discord_interactions5.InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          content: "You don't have a Clamagotchi yet! Use `/start` to create one."
+        }
+      });
+    }
+    return response.status(200).json({
+      type: import_discord_interactions5.InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        embeds: [
+          formatEmbedInfoGeneral(pet),
+          formatEmbedInfoImage(pet)
+        ]
+      }
+    });
+  } catch (error) {
+    console.error("Error in info command:", error);
+    return response.status(200).json({
+      type: import_discord_interactions5.InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        content: "Something went wrong while fetching your pet."
+      }
+    });
+  }
 };
 
 // src/lib/commands/help/help.ts
