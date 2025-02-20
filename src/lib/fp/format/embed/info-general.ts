@@ -13,16 +13,46 @@ export const formatEmbedInfoGeneral = (pet: Partial<Pet>) => {
       {
         name: "Characteristics",
         value: [
-          `Personality: **BRAT**`,
-          `Maturity: **BABY**`,
-          `Gender: **NEUTRAL**`,
+          `Personality: **${pet.personality}**`,
+          `Maturity: **${pet.maturity}**`,
+          `Gender: **${pet.gender}**`,
         ].join("\n"),
         inline: true,
       },
       {
         name: "General",
-        value: [`Level: **15**`, `XP: **25**`, `Pearls: **3**`].join("\n"),
+        value: [
+          `Level: **${pet.level}**`,
+          `Experience: **${pet.experience}**`,
+          `Pearls: **${pet.pearls}**`,
+        ].join("\n"),
         inline: true,
+      }
+    )
+    .addFields(
+      {
+        name: "Condition",
+        value: [
+          `hunger: **${pet.hunger! * 100}%**`,
+          `thirst: **${pet.thirst! * 100}%**`,
+          `health: **${pet.health! * 100}%**`,
+          `affection: **${pet.affection! * 100}%**`,
+          `tiredness: **${pet.tiredness! * 100}%**`,
+          `hygiene: **${pet.hygiene! * 100}%**`,
+        ].join(" ◇ "),
+        inline: false,
+      },
+      {
+        name: "Physical Stats",
+        value: [
+          `intelligence: **${pet.intelligence}**`,
+          `fitness: **${pet.fitness}**`,
+          `reflective: **${pet.reflective}**`,
+          `reactive: **${pet.reactive}**`,
+          `carapace: **${pet.carapace}**`,
+          `regeneration: **${pet.regeneration}**`,
+        ].join(" ◇ "),
+        inline: false,
       }
     )
     .toJSON();

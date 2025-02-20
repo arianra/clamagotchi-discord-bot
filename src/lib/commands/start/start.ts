@@ -8,6 +8,7 @@ import {
   respondSuccess,
   respondError,
   APIResponse,
+  respond,
 } from "@lib/responses/generic-response";
 import { EMOJI_CLAM_SPARKLE } from "@/lib/constants/emojis";
 import {
@@ -17,16 +18,36 @@ import {
 import { Message } from "discord.js";
 import { formatInfo } from "@/lib/fp/format/format-info";
 import { Pet } from "@/lib/types/Pet";
+import { getRandomGender } from "@/lib/fp/creation/get-random-gender";
+import { getRandomPersonality } from "@/lib/fp/creation/get-random-personality";
+import { VercelRequest, VercelResponse } from "@vercel/node";
+import { InteractionResponseType } from "discord-interactions";
+import { formatEmbedInfoGeneral } from "@/lib/fp/format/embed/info-general";
+import { formatEmbedInfoStats } from "@/lib/fp/format/embed/info-stats";
+import { formatEmbedInfoImage } from "@/lib/fp/format/embed/info-image";
 
-export async function start(message: Message): Promise<APIResponse> {
+export async function start(
+  request: VercelRequest,
+  response: VercelResponse
+): Promise<VercelResponse> {
+  console.log("start command received");
+
+  const message = request.body;
   const discordId = message?.member?.user.id as string;
-  // const name = message.data.options[0]?.value as string;
-  const name = null;
 
   if (!discordId) {
-    return respondError(
-      "Something went wrong while creating your Clamagotchi, seems there's no discord ID?"
-    );
+    return response.status(200).json({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        content: "skill issue discord id",
+      },
+    });
+    // return respond(
+    //   response,
+    //   respondError(
+    //     "Something went wrong while creating your Clamagotchi, seems there's no discord ID?"
+    //   )
+    // );
   }
   try {
     // Find or create user
@@ -44,72 +65,98 @@ export async function start(message: Message): Promise<APIResponse> {
       user = newUser;
     }
     if (!user) {
-      return respondError(
-        "Something went wrong while creating your user associated with your pet..."
-      );
+      return response.status(200).json({
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          content: "skill issue user",
+        },
+      });
+      // return respond(
+      //   response,
+      //   respondError(
+      //     "Something went wrong while creating your user associated with your pet..."
+      //   )
+      // );
     }
+    // TypeScript narrowing - we know user exists after the above checks
+    const validUser = user;
+
     // Check if user already has a pet
     const existingPet = await db.query.pets.findFirst({
       where: eq(pets.userId, user.id),
     });
     if (existingPet) {
-      return respondError(
-        `You already have a Clamagotchi! Use \`/info\` to see their status.\n\n${formatInfo(
-          existingPet as Pet,
-          discordId
-        )}`
-      );
+      return response.status(200).json({
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          content: `You already own a Clamagotchi: \n\u200b`,
+          embeds: [
+            formatEmbedInfoGeneral(existingPet as Pet),
+            formatEmbedInfoImage(existingPet as Pet),
+          ],
+        },
+      });
+      // return respond(
+      //   response,
+      //   respondError(
+      //     `You already have a Clamagotchi! Use \`/info\` to see their status.\n\n${formatInfo(
+      //       existingPet as Pet,
+      //       discordId
+      //     )}`
+      //   )
+      // );
     }
+
     // Get custom name if provided, otherwise generate one
-    const petName = name || (await createClamagotchiName());
+    const petName = await createClamagotchiName();
     const imageUrl = await fetchRandomAvatarUrl();
 
+    const personality = getRandomPersonality();
+    const gender = getRandomGender();
     const stats = distributeRandomPhysicalStats(asPositivePoints(25));
-    console.log("stats", stats);
-    console.log("petName", petName);
-    console.log("imageUrl", imageUrl);
-    return respondSuccess({
-      stats,
-      petName,
-      imageUrl,
-    });
 
-    // Create new pet with random stats
+    // return response.status(200).json({
+    //   type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+    //   data: {
+    //     content: JSON.stringify([
+    //       stats,
+    //       petName,
+    //       imageUrl,
+    //       personality,
+    //       gender,
+    //     ]),
+    //   },
+    // });
+
+    console.info(
+      `Creating new pet for user ${validUser.discordId}, pet name: ${petName}`
+    );
+
     const [newPet] = await db
       .insert(pets)
       .values({
-        userId: user.id,
+        userId: validUser.id,
         name: petName,
         imageUrl,
         ...distributeRandomPhysicalStats(asPositivePoints(25)),
-        // Other fields use schema defaults
       })
       .returning();
 
-    // Format response
-    const response = `# 🎉 Congratulations on your new Clamagotchi! 🎉
+    console.info(newPet);
 
-Your new pet has arrived!
-
-## Meet ${petName}! ${EMOJI_CLAM_SPARKLE}
-
-${imageUrl}
-
-## Characteristics
-Personality: ${newPet.personality}
-Maturity: ${newPet.maturity}
-Gender: ${newPet.gender}
-
-### Stats
-${formatPhysicalStats(newPet)}
-
-Use <@info:1341627143934836756> to check on ${petName}'s status and \`/help\` to learn how to care for them!`;
-
-    return respondSuccess(response);
+    return response.status(200).json({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        content: "skill issue after creating pet",
+      },
+    });
+    // return respond(response, respondSuccess(JSON.stringify(newPet)));
+    // return respond(response, respondSuccess("extreme skill issue"));
   } catch (error) {
     console.error("Error in start command:", error);
-    return respondError(
-      "Something went wrong while creating your pet. Please try again later."
+    return respond(
+      response,
+      respondError("Something went wrong while creating your pet.")
     );
   }
 }

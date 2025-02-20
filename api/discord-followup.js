@@ -16,6 +16,15 @@ var __toESM = (mod, isNodeMode, target) => {
   return to;
 };
 var __commonJS = (cb, mod) => () => (mod || cb((mod = { exports: {} }).exports, mod), mod.exports);
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, {
+      get: all[name],
+      enumerable: true,
+      configurable: true,
+      set: (newValue) => all[name] = () => newValue
+    });
+};
 var __require = /* @__PURE__ */ createRequire(import.meta.url);
 
 // node_modules/is-buffer/index.js
@@ -17725,7 +17734,6 @@ var fetchRandomAvatarUrl = async () => {
     }
     const randomIndex = Math.floor(Math.random() * blobs.length);
     const randomBlob = blobs[randomIndex];
-    console.log("Random blob:", randomBlob);
     return randomBlob.url;
   } catch (error) {
     console.error("Error getting random avatar:", error);

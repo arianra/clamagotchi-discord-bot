@@ -24,16 +24,15 @@ export const respond = (
   response: VercelResponse,
   responseMessage: APIResponse
 ): VercelResponse => {
-  const errorCode = responseMessage.success ? 200 : 400;
   const { message } = responseMessage;
   if (!message) {
-    return response.status(errorCode).json({
+    return response.status(200).json({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-      data: { content: "response is not the correct shape" },
+      data: { content: "(error) response is not the correct shape" },
     });
   }
-  return response.status(errorCode).json({
+  return response.status(200).json({
     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-    data: { content: message },
+    data: { content: JSON.stringify(message) },
   });
 };

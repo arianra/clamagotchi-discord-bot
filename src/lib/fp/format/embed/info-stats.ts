@@ -29,7 +29,7 @@ export const formatEmbedInfoStats = (pet: Partial<Pet>) => {
         value: formatPhysicalStats(
           distributeRandomPhysicalStats(asPositivePoints(25))
         ),
-        inline: true,
+        inline: false,
       }
     )
     .toJSON();

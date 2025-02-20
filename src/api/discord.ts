@@ -26,6 +26,9 @@ import { info } from "@/lib/commands/info/info";
 import { formatMessageInfoCommand } from "@/lib/fp/format/discord-message-formats/format-message-info-command";
 import { sendWebhookResponse } from "@/lib/responses/send-webhook-response";
 import { sendDeferredResponse } from "@/lib/responses/send-deferred-response";
+import { help } from "@/lib/commands/help/help";
+import { show } from "@/lib/commands/show/show";
+import { random } from "@/lib/commands/random/random";
 
 export default async (request: VercelRequest, response: VercelResponse) => {
   if (request.method !== "POST") {
@@ -50,18 +53,23 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     return respondPong(response);
   }
 
+  if (message.data.name === "help") {
+    return help(request, response);
+  }
+
   if (message.data.name === "info") {
     return info(request, response);
   }
 
   if (message.data.name === "start") {
-    console.info("Start Command received.");
+    return start(request, response);
+  }
 
-    return response.status(200).json({
-      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-      data: {
-        content: `use ${formatMessageInfoCommand()} for now.`,
-      },
-    });
+  if (message.data.name === "show") {
+    return show(request, response);
+  }
+
+  if (message.data.name === "random") {
+    return random(request, response);
   }
 };
