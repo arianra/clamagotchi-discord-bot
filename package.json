@@ -13,7 +13,7 @@
     "dev:bun": "bun --watch build ./src/api/* --outdir ./api --target node",
     "build": "bun build ./src/api/* --outdir ./api --target node",
     "db:generate": "drizzle-kit generate",
-    "db:push": "drizzle-kit push:pg",
+    "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "rename-assets": "bun run ./scripts/rename-assets-avatar.ts",
     "renumber-assets": "bun run ./scripts/renumber-assets-avatar.ts",
@@ -27,16 +27,17 @@
     "axios": "^1.7.9",
     "discord-interactions": "^4.1.1",
     "discord.js": "^14.14.1",
-    "drizzle-orm": "^0.29.0",
+    "drizzle-orm": "^0.39.3",
     "isomorphic-fetch": "^3.0.0",
     "node-fetch": "2",
+    "pg": "^8.13.3",
     "undici": "^7.3.0"
   },
   "devDependencies": {
     "@types/bun": "^1.2.2",
     "@types/node": "^20.0.0",
     "bun-types": "latest",
-    "drizzle-kit": "^0.20.0",
+    "drizzle-kit": "^0.30.4",
     "typescript": "^5.0.0",
     "vercel": "^41.1.4"
   },
