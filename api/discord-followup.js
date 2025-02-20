@@ -17725,6 +17725,7 @@ var fetchRandomAvatarUrl = async () => {
     }
     const randomIndex = Math.floor(Math.random() * blobs.length);
     const randomBlob = blobs[randomIndex];
+    console.log("Random blob:", randomBlob);
     return randomBlob.url;
   } catch (error) {
     console.error("Error getting random avatar:", error);
