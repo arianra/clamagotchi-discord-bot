@@ -17,9 +17,10 @@ import { eq } from "drizzle-orm";
 import { InteractionResponseType } from "discord-interactions";
 import { db } from "@/db";
 import { DB_ENUM_TRADE_STATUS } from "@/lib/constants/db-enums";
-import { trades, petUsers, pets } from "@/db/schema";
+import { trades } from "@/db/schema";
 import { acceptTrade } from "@/lib/commands/trade/accept-trade";
 import { declineTrade } from "@/lib/commands/trade/decline-trade";
+import { trade } from "@/lib/commands/trade/trade";
 
 export default async (request: VercelRequest, response: VercelResponse) => {
   if (request.method !== "POST") {
@@ -62,6 +63,10 @@ export default async (request: VercelRequest, response: VercelResponse) => {
 
   if (message.data.name === "random") {
     return random(request, response);
+  }
+
+  if (message.data.name === "trade") {
+    return trade(request, response);
   }
 
   if (message.type === InteractionType.MESSAGE_COMPONENT) {
