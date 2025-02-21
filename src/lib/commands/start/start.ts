@@ -101,7 +101,7 @@ export async function start(
     return response.status(200).json({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        content: `🎉 Congratulations on your new Clamagotchi! ${EMOJI_CLAM_SPARKLE}`,
+        content: `🎉 **Congratulations on your new Clamagotchi!** ${EMOJI_CLAM_SPARKLE}\n\u200b`,
         embeds: [
           formatEmbedInfoGeneral(newPet as Pet, discordId),
           formatEmbedInfoImage(newPet as Pet),
