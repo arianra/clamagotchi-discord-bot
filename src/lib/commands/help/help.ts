@@ -9,6 +9,8 @@ const helpText = readFileSync(
 );
 
 export const help = (request: VercelRequest, response: VercelResponse) => {
+  console.info("Help command received.");
+
   return response.status(200).json({
     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
     data: {

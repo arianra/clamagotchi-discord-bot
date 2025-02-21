@@ -30,7 +30,7 @@ export async function start(
   request: VercelRequest,
   response: VercelResponse
 ): Promise<VercelResponse> {
-  console.log("Start command received.");
+  console.info("Start command received.");
 
   const message = request.body;
   const discordId = message?.member?.user.id as string;
@@ -55,7 +55,7 @@ export async function start(
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
           content:
-            "(error) Some edge-case around creating a user, maybe try again.",
+            "Some error edge-case around creating a user, maybe try again.",
         },
       });
     }
@@ -119,7 +119,7 @@ export async function start(
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
         content:
-          "(error) Something went wrong while creating your pet, maybe try again.",
+          "Something went wrong while creating your pet, maybe try again.",
       },
     });
   }

@@ -11,6 +11,8 @@ export const info = async (
   request: VercelRequest,
   response: VercelResponse
 ) => {
+  console.info("Info command received.");
+
   const message = request.body;
   const discordId = message?.member?.user.id as string;
 
@@ -55,7 +57,8 @@ export const info = async (
     return response.status(200).json({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        content: "Something went wrong while fetching your pet.",
+        content:
+          "Something went wrong while fetching your pet, maybe try again.",
       },
     });
   }

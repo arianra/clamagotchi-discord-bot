@@ -8,6 +8,7 @@ export const random = async (
   request: VercelRequest,
   response: VercelResponse
 ) => {
+  console.info("Random command received.");
   try {
     const randomImageUrl = await fetchRandomAvatarUrl();
     const randomName = await createClamagotchiName();
@@ -26,7 +27,8 @@ export const random = async (
     return response.status(200).json({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        content: "Something went wrong while generating a random Clamagotchi.",
+        content:
+          "Something went wrong while generating a random Clamagotchi, maybe try again.",
       },
     });
   }
