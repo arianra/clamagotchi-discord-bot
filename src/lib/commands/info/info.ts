@@ -25,6 +25,15 @@ export const info = async (
       },
     });
 
+    if (!user) {
+      return response.status(200).json({
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          content: `You don't have a Clamagotchi yet! Use ${FORMAT_MESSAGE_START_COMMAND} to create one.`,
+        },
+      });
+    }
+
     const validUser = user!;
 
     return response.status(200).json({
