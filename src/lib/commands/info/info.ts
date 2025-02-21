@@ -39,10 +39,7 @@ export const info = async (
     return response.status(200).json({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        embeds: [
-          formatEmbedInfoGeneral(validUser.pet as Pet, discordId),
-          formatEmbedInfoImage(validUser.pet as Pet),
-        ],
+        embeds: [formatEmbedInfoGeneral(validUser.pet as Pet, discordId)],
       },
     });
   } catch (error) {
