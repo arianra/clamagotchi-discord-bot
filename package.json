@@ -12,9 +12,9 @@
     "dev:api-debug": "vercel dev --debug",
     "dev:bun": "bun --watch build ./src/api/* --outdir ./api --target node",
     "build": "bun build ./src/api/* --outdir ./api --target node",
-    "db:generate": "drizzle-kit generate",
-    "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio",
+    "generate": "drizzle-kit generate",
+    "push": "drizzle-kit push",
+    "studio": "drizzle-kit studio",
     "rename-assets": "bun run ./scripts/rename-assets-avatar.ts",
     "renumber-assets": "bun run ./scripts/renumber-assets-avatar.ts",
     "get-commands": "bun run scripts/get-slash-commands.ts"
