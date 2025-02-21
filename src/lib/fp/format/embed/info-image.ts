@@ -2,7 +2,7 @@ import { getRandomColor } from "@/lib/constants/colors";
 import { Pet } from "@/lib/types/Pet";
 import { EmbedBuilder } from "discord.js";
 
-export const formatEmbedInfoImage = (pet: Partial<Pet>) => {
+export const formatEmbedInfoImage = (pet: Pick<Pet, "name" | "imageUrl">) => {
   return new EmbedBuilder()
     .setColor(getRandomColor(700))
     .setImage(pet.imageUrl!)

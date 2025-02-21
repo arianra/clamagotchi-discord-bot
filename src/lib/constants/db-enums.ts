@@ -1,4 +1,4 @@
-export const DB_ENUM_PERSONALITY: readonly [string, ...string[]] = [
+export const DB_ENUM_PERSONALITY = [
   "BRAT",
   "KAWAI",
   "VALLEY GIRL",
@@ -16,15 +16,11 @@ export const DB_ENUM_PERSONALITY: readonly [string, ...string[]] = [
   "SNOBBY",
   "DADDY",
   "GIRLY",
-];
+] as const;
 
-export const DB_ENUM_GENDER: readonly [string, ...string[]] = [
-  "NEUTRAL",
-  "MALE",
-  "FEMALE",
-];
+export const DB_ENUM_GENDER = ["NEUTRAL", "MALE", "FEMALE"] as const;
 
-export const DB_ENUM_MATURITY: readonly [string, ...string[]] = [
+export const DB_ENUM_MATURITY = [
   "BABY",
   "TODDLER",
   "CHILD",
@@ -33,7 +29,7 @@ export const DB_ENUM_MATURITY: readonly [string, ...string[]] = [
   "ADULT",
   "ELDER",
   "ANCIENT",
-];
+] as const;
 
 export const DB_ENUM_TRADE_STATUS = [
   "pending",
