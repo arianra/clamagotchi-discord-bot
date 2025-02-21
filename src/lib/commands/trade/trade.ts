@@ -83,9 +83,7 @@ export const trade = async (
         content: `<@${targetId}>, <@${traderId}> wants to trade their Clamagotchi with you!`,
         embeds: [
           formatEmbedInfoGeneral(traderPet as Pet, traderId),
-          formatEmbedInfoImage(traderPet as Pet),
           formatEmbedInfoGeneral(targetPet as Pet, targetId),
-          formatEmbedInfoImage(targetPet as Pet),
         ],
         components: [
           {
