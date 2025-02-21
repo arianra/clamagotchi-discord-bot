@@ -106,7 +106,8 @@ export const acceptTrade = async (
       return response.status(200).json({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
-          content: "Trade failed. All changes have been reversed.",
+          content:
+            "Trade failed. All changes have been reversed. You might be able to accept/deny again.",
         },
       });
     }
@@ -115,7 +116,8 @@ export const acceptTrade = async (
     return response.status(200).json({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        content: "Something went wrong while starting the trade.",
+        content:
+          "Something went wrong while starting the trade. You might be able to accept/deny again",
       },
     });
   }
