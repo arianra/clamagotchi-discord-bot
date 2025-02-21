@@ -97,7 +97,9 @@ export async function start(
         userId: validUser.id,
         name: petName,
         imageUrl,
-        ...distributeRandomPhysicalStats(asPositivePoints(25)),
+        personality,
+        gender,
+        ...stats,
       })
       .returning();
 
