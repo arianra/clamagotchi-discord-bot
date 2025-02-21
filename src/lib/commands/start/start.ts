@@ -3,20 +3,13 @@ import { db } from "@db/index";
 import { pets, petUsers } from "@db/schema";
 import { createClamagotchiName } from "@lib/fp/create-clamagotchi-name";
 import { fetchRandomAvatarUrl } from "@lib/fp/fetch-random-avatar-url";
-import { formatPhysicalStats } from "@lib/fp/format/format-physical-stats";
-import {
-  respondSuccess,
-  respondError,
-  APIResponse,
-  respond,
-} from "@lib/responses/generic-response";
+
 import { EMOJI_CLAM_SPARKLE } from "@/lib/constants/emojis";
 import {
   asPositivePoints,
   distributeRandomPhysicalStats,
 } from "@lib/fp/levelling/distribute-random-physical-stats";
 import { Message } from "discord.js";
-import { formatInfo } from "@/lib/fp/format/format-info";
 import { Pet } from "@/lib/types/Pet";
 import { getRandomGender } from "@/lib/fp/creation/get-random-gender";
 import { getRandomPersonality } from "@/lib/fp/creation/get-random-personality";
@@ -108,7 +101,7 @@ export async function start(
     return response.status(200).json({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        content: "🎉 Congratulations on your new Clamagotchi! 🎉",
+        content: `🎉 Congratulations on your new Clamagotchi! ${EMOJI_CLAM_SPARKLE}`,
         embeds: [
           formatEmbedInfoGeneral(newPet as Pet),
           formatEmbedInfoImage(newPet as Pet),
