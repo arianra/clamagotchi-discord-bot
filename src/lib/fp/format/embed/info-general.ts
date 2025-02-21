@@ -9,6 +9,7 @@ export const formatEmbedInfoGeneral = (pet: Pet, discordId: string) => {
     .setColor(getRandomColor(700))
     .setTitle(`${EMOJI_CLAM} Clamagotchi: **${pet.name}** ${EMOJI_CLAM}`)
     .setDescription(`Owned by <@${discordId}>`)
+    .setThumbnail(pet.imageUrl)
     .addFields(
       {
         name: "Characteristics",
