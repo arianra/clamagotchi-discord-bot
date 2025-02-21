@@ -63,23 +63,43 @@ export const acceptTrade = async (
       const originalTargetUserId = validTarget.user.id;
 
       try {
-        // First swap
+        // First swap - set trader's pet to null temporarily
         await db
           .update(pets)
-          .set({ userId: validTarget.user.id })
+          .set({ userId: null })
           .where(eq(pets.id, traderPetId));
 
         try {
-          // Second swap
+          // Second swap - give target's pet to trader
           await db
             .update(pets)
             .set({ userId: validTrader.user.id })
             .where(eq(pets.id, targetPetId));
+
+          try {
+            // Final swap - give trader's pet to target
+            await db
+              .update(pets)
+              .set({ userId: validTarget.user.id })
+              .where(eq(pets.id, traderPetId));
+          } catch (error) {
+            // Rollback second swap if final swap fails
+            await db
+              .update(pets)
+              .set({ userId: validTarget.user.id })
+              .where(eq(pets.id, targetPetId));
+            // Restore trader's pet
+            await db
+              .update(pets)
+              .set({ userId: validTrader.user.id })
+              .where(eq(pets.id, traderPetId));
+            throw error;
+          }
         } catch (error) {
           // Rollback first swap if second fails
           await db
             .update(pets)
-            .set({ userId: originalTraderUserId })
+            .set({ userId: validTrader.user.id })
             .where(eq(pets.id, traderPetId));
           throw error;
         }
