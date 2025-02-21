@@ -97826,6 +97826,11 @@ var createClamagotchiName = () => {
   return selectedPattern();
 };
 
+// src/lib/constants/emojis.ts
+var EMOJI_CLAM = "\uD83E\uDDAA";
+var EMOJI_SPARKLE = "✨";
+var EMOJI_CLAM_SPARKLE = `${EMOJI_CLAM}${EMOJI_SPARKLE}`;
+
 // src/lib/fp/levelling/distribute-random-physical-stats.ts
 function distributeRandomPhysicalStats(points) {
   if (!points || points < 1)
@@ -98134,18 +98139,10 @@ var getRandomColor = (gamut2 = 500) => {
   return colors[Math.floor(Math.random() * colors.length)];
 };
 
-// src/lib/constants/disord-ids.ts
-var DISCORD_ID_DVDDYSTALIN = "607025355244568629";
-
-// src/lib/constants/emojis.ts
-var EMOJI_CLAM = "\uD83E\uDDAA";
-var EMOJI_SPARKLE = "✨";
-var EMOJI_CLAM_SPARKLE = `${EMOJI_CLAM}${EMOJI_SPARKLE}`;
-
 // src/lib/fp/format/embed/info-general.ts
 var import_discord = __toESM(require_src(), 1);
-var formatEmbedInfoGeneral = (pet) => {
-  return new import_discord.EmbedBuilder().setColor(getRandomColor(700)).setTitle(`${EMOJI_CLAM} Clamagotchi: **${pet.name}** ${EMOJI_CLAM}`).setDescription(`Owned by <@${DISCORD_ID_DVDDYSTALIN}>`).addFields({
+var formatEmbedInfoGeneral = (pet, discordId) => {
+  return new import_discord.EmbedBuilder().setColor(getRandomColor(700)).setTitle(`${EMOJI_CLAM} Clamagotchi: **${pet.name}** ${EMOJI_CLAM}`).setDescription(`Owned by <@${discordId}>`).addFields({
     name: "Characteristics",
     value: [
       `Personality: **${pet.personality}**`,
@@ -98232,7 +98229,7 @@ async function start(request, response) {
           content: `You already own a Clamagotchi: 
 ​`,
           embeds: [
-            formatEmbedInfoGeneral(existingPet),
+            formatEmbedInfoGeneral(existingPet, discordId),
             formatEmbedInfoImage(existingPet)
           ]
         }
@@ -98248,15 +98245,17 @@ async function start(request, response) {
       userId: validUser.id,
       name: petName,
       imageUrl,
-      ...distributeRandomPhysicalStats(asPositivePoints(25))
+      personality,
+      gender,
+      ...stats
     }).returning();
     console.info(newPet);
     return response.status(200).json({
       type: import_discord_interactions3.InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        content: "\uD83C\uDF89 Congratulations on your new Clamagotchi! \uD83C\uDF89",
+        content: `\uD83C\uDF89 Congratulations on your new Clamagotchi! ${EMOJI_CLAM_SPARKLE}`,
         embeds: [
-          formatEmbedInfoGeneral(newPet),
+          formatEmbedInfoGeneral(newPet, discordId),
           formatEmbedInfoImage(newPet)
         ]
       }
@@ -98290,12 +98289,20 @@ var info = async (request, response) => {
         pet: true
       }
     });
+    if (!user) {
+      return response.status(200).json({
+        type: import_discord_interactions4.InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          content: `You don't have a Clamagotchi yet! Use ${FORMAT_MESSAGE_START_COMMAND} to create one.`
+        }
+      });
+    }
     const validUser = user;
     return response.status(200).json({
       type: import_discord_interactions4.InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
         embeds: [
-          formatEmbedInfoGeneral(validUser.pet),
+          formatEmbedInfoGeneral(validUser.pet, discordId),
           formatEmbedInfoImage(validUser.pet)
         ]
       }

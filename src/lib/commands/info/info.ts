@@ -40,7 +40,7 @@ export const info = async (
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
         embeds: [
-          formatEmbedInfoGeneral(validUser.pet as Pet),
+          formatEmbedInfoGeneral(validUser.pet as Pet, discordId),
           formatEmbedInfoImage(validUser.pet as Pet),
         ],
       },

@@ -65,7 +65,7 @@ export async function start(
         data: {
           content: `You already own a Clamagotchi: \n\u200b`,
           embeds: [
-            formatEmbedInfoGeneral(existingPet as Pet),
+            formatEmbedInfoGeneral(existingPet as Pet, discordId),
             formatEmbedInfoImage(existingPet as Pet),
           ],
         },
@@ -103,7 +103,7 @@ export async function start(
       data: {
         content: `🎉 Congratulations on your new Clamagotchi! ${EMOJI_CLAM_SPARKLE}`,
         embeds: [
-          formatEmbedInfoGeneral(newPet as Pet),
+          formatEmbedInfoGeneral(newPet as Pet, discordId),
           formatEmbedInfoImage(newPet as Pet),
         ],
       },

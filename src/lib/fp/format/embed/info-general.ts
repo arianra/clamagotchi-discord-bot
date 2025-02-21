@@ -1,14 +1,16 @@
 import { getRandomColor } from "@/lib/constants/colors";
-import { DISCORD_ID_DVDDYSTALIN } from "@/lib/constants/disord-ids";
 import { EMOJI_CLAM } from "@/lib/constants/emojis";
 import { Pet } from "@/lib/types/Pet";
 import { EmbedBuilder } from "discord.js";
 
-export const formatEmbedInfoGeneral = (pet: Partial<Pet>) => {
+export const formatEmbedInfoGeneral = (
+  pet: Partial<Pet>,
+  discordId: string
+) => {
   return new EmbedBuilder()
     .setColor(getRandomColor(700))
     .setTitle(`${EMOJI_CLAM} Clamagotchi: **${pet.name}** ${EMOJI_CLAM}`)
-    .setDescription(`Owned by <@${DISCORD_ID_DVDDYSTALIN}>`)
+    .setDescription(`Owned by <@${discordId}>`)
     .addFields(
       {
         name: "Characteristics",
