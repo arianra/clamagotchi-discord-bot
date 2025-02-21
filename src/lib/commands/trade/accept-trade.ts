@@ -1,12 +1,11 @@
 import { eq } from "drizzle-orm";
 import { db } from "@db/index";
 import { trades, petUsers, pets } from "@db/schema";
-import { VercelRequest, VercelResponse } from "@vercel/node";
+import { VercelResponse } from "@vercel/node";
 import { InteractionResponseType } from "discord-interactions";
 import { DB_ENUM_TRADE_STATUS } from "@/lib/constants/db-enums";
 
 export const acceptTrade = async (
-  request: VercelRequest,
   response: VercelResponse,
   traderId: string,
   targetId: string,
@@ -47,10 +46,9 @@ export const acceptTrade = async (
     const validTrader = trader[0];
     const validTarget = target[0];
 
-    // Swap the pets between users
-    await db.transaction(async (tx) => {
-      // Update trade status
-      await tx
+    try {
+      // Update trade status first
+      await db
         .update(trades)
         .set({
           status: DB_ENUM_TRADE_STATUS[1], // completed
@@ -58,31 +56,66 @@ export const acceptTrade = async (
         })
         .where(eq(trades.tradeId, tradeId));
 
-      // Swap pets
-      await Promise.all([
-        tx
+      // Store original pet IDs and owners
+      const traderPetId = validTrader.pet!.id;
+      const targetPetId = validTarget.pet!.id;
+      const originalTraderUserId = validTrader.user.id;
+      const originalTargetUserId = validTarget.user.id;
+
+      try {
+        // First swap
+        await db
           .update(pets)
           .set({ userId: validTarget.user.id })
-          .where(eq(pets.id, validTrader.pet!.id)),
-        tx
-          .update(pets)
-          .set({ userId: validTrader.user.id })
-          .where(eq(pets.id, validTarget.pet!.id)),
-      ]);
-    });
+          .where(eq(pets.id, traderPetId));
 
-    return response.status(200).json({
-      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-      data: {
-        content: `Trade completed! <@${traderId}> and <@${targetId}> have swapped their Clamagotchis.`,
-      },
-    });
+        try {
+          // Second swap
+          await db
+            .update(pets)
+            .set({ userId: validTrader.user.id })
+            .where(eq(pets.id, targetPetId));
+        } catch (error) {
+          // Rollback first swap if second fails
+          await db
+            .update(pets)
+            .set({ userId: originalTraderUserId })
+            .where(eq(pets.id, traderPetId));
+          throw error;
+        }
+      } catch (error) {
+        // Rollback trade status if any pet swap fails
+        await db
+          .update(trades)
+          .set({
+            status: DB_ENUM_TRADE_STATUS[0], // back to pending
+            completedAt: null,
+          })
+          .where(eq(trades.tradeId, tradeId));
+        throw error;
+      }
+
+      return response.status(200).json({
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          content: `Trade completed! <@${traderId}> and <@${targetId}> have swapped their Clamagotchis.`,
+        },
+      });
+    } catch (error) {
+      console.error("Error during trade execution:", error);
+      return response.status(200).json({
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          content: "Trade failed. All changes have been reversed.",
+        },
+      });
+    }
   } catch (error) {
     console.error("Error in trade acceptance:", error);
     return response.status(200).json({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        content: "Something went wrong while completing the trade.",
+        content: "Something went wrong while starting the trade.",
       },
     });
   }

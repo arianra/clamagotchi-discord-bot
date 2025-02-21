@@ -21,6 +21,7 @@ import { trades } from "@/db/schema";
 import { acceptTrade } from "@/lib/commands/trade/accept-trade";
 import { declineTrade } from "@/lib/commands/trade/decline-trade";
 import { trade } from "@/lib/commands/trade/trade";
+import { tradeComponentInteraction } from "@/lib/commands/trade/trade-component-interaction";
 
 export default async (request: VercelRequest, response: VercelResponse) => {
   if (request.method !== "POST") {
@@ -70,42 +71,11 @@ export default async (request: VercelRequest, response: VercelResponse) => {
   }
 
   if (message.type === InteractionType.MESSAGE_COMPONENT) {
-    const [action, tradeId] = message.data.custom_id.split(":");
-    const [traderId, targetId] = tradeId.split("-");
+    const messageAction = message.data.custom_id;
+    const [action] = messageAction.split(":");
 
-    // Check if the user clicking is the target
-    const interactorId = message?.member?.user.id as string;
-    if (interactorId !== targetId) {
-      return response.status(200).json({
-        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-          content:
-            "Only the user being offered the trade can accept or decline it.",
-        },
-      });
-    }
-
-    // Get trade status
-    const trade = await db.query.trades.findFirst({
-      where: eq(trades.tradeId, tradeId),
-    });
-
-    // If trade doesn't exist or is not pending, return error
-    if (!trade || trade.status !== DB_ENUM_TRADE_STATUS[0]) {
-      return response.status(200).json({
-        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-          content: "This trade is no longer active.",
-        },
-      });
-    }
-
-    if (action === "accept_trade") {
-      return acceptTrade(request, response, traderId, targetId, tradeId);
-    }
-
-    if (action === "decline_trade") {
-      return declineTrade(request, response, traderId, targetId, tradeId);
+    if (action === "accept_trade" || action === "decline_trade") {
+      return tradeComponentInteraction(response, message);
     }
   }
 };

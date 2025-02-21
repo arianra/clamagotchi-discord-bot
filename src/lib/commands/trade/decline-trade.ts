@@ -6,7 +6,6 @@ import { InteractionResponseType } from "discord-interactions";
 import { DB_ENUM_TRADE_STATUS } from "@/lib/constants/db-enums";
 
 export const declineTrade = async (
-  request: VercelRequest,
   response: VercelResponse,
   traderId: string,
   targetId: string,
