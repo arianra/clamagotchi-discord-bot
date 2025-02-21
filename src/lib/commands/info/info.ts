@@ -4,7 +4,6 @@ import { pets, petUsers } from "@db/schema";
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import { InteractionResponseType } from "discord-interactions";
 import { formatEmbedInfoGeneral } from "@/lib/fp/format/embed/info-general";
-import { formatEmbedInfoStats } from "@/lib/fp/format/embed/info-stats";
 import { formatEmbedInfoImage } from "@/lib/fp/format/embed/info-image";
 import { Pet } from "@/lib/types/Pet";
 
@@ -27,23 +26,12 @@ export const info = async (
   try {
     const user = await db.query.petUsers.findFirst({
       where: eq(petUsers.discordId, discordId),
+      with: {
+        pet: true,
+      },
     });
 
-    if (!user) {
-      return response.status(200).json({
-        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-          content:
-            "You don't have a Clamagotchi yet! Use `/start` to create one.",
-        },
-      });
-    }
-
-    const pet = await db.query.pets.findFirst({
-      where: eq(pets.userId, user.id),
-    });
-
-    if (!pet) {
+    if (!user || !user.pet) {
       return response.status(200).json({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
@@ -57,8 +45,8 @@ export const info = async (
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
         embeds: [
-          formatEmbedInfoGeneral(pet as Pet),
-          formatEmbedInfoImage(pet as Pet),
+          formatEmbedInfoGeneral(user.pet as Pet),
+          formatEmbedInfoImage(user.pet as Pet),
         ],
       },
     });

@@ -30,25 +30,11 @@ export async function start(
   request: VercelRequest,
   response: VercelResponse
 ): Promise<VercelResponse> {
-  console.log("start command received");
+  console.log("Start command received.");
 
   const message = request.body;
   const discordId = message?.member?.user.id as string;
 
-  if (!discordId) {
-    return response.status(200).json({
-      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-      data: {
-        content: "skill issue discord id",
-      },
-    });
-    // return respond(
-    //   response,
-    //   respondError(
-    //     "Something went wrong while creating your Clamagotchi, seems there's no discord ID?"
-    //   )
-    // );
-  }
   try {
     // Find or create user
     let user = await db.query.petUsers.findFirst({
@@ -68,15 +54,10 @@ export async function start(
       return response.status(200).json({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
-          content: "skill issue user",
+          content:
+            "(error) Some edge-case around creating a user, maybe try again.",
         },
       });
-      // return respond(
-      //   response,
-      //   respondError(
-      //     "Something went wrong while creating your user associated with your pet..."
-      //   )
-      // );
     }
     // TypeScript narrowing - we know user exists after the above checks
     const validUser = user;
@@ -96,15 +77,6 @@ export async function start(
           ],
         },
       });
-      // return respond(
-      //   response,
-      //   respondError(
-      //     `You already have a Clamagotchi! Use \`/info\` to see their status.\n\n${formatInfo(
-      //       existingPet as Pet,
-      //       discordId
-      //     )}`
-      //   )
-      // );
     }
 
     // Get custom name if provided, otherwise generate one
@@ -114,19 +86,6 @@ export async function start(
     const personality = getRandomPersonality();
     const gender = getRandomGender();
     const stats = distributeRandomPhysicalStats(asPositivePoints(25));
-
-    // return response.status(200).json({
-    //   type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-    //   data: {
-    //     content: JSON.stringify([
-    //       stats,
-    //       petName,
-    //       imageUrl,
-    //       personality,
-    //       gender,
-    //     ]),
-    //   },
-    // });
 
     console.info(
       `Creating new pet for user ${validUser.discordId}, pet name: ${petName}`
@@ -147,16 +106,21 @@ export async function start(
     return response.status(200).json({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        content: "skill issue after creating pet",
+        content: "🎉 Congratulations on your new Clamagotchi! 🎉",
+        embeds: [
+          formatEmbedInfoGeneral(newPet as Pet),
+          formatEmbedInfoImage(newPet as Pet),
+        ],
       },
     });
-    // return respond(response, respondSuccess(JSON.stringify(newPet)));
-    // return respond(response, respondSuccess("extreme skill issue"));
   } catch (error) {
     console.error("Error in start command:", error);
-    return respond(
-      response,
-      respondError("Something went wrong while creating your pet.")
-    );
+    return response.status(200).json({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        content:
+          "(error) Something went wrong while creating your pet, maybe try again.",
+      },
+    });
   }
 }
