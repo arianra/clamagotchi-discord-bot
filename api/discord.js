@@ -98199,7 +98199,7 @@ var formatEmbedInfoImage = (pet) => {
 
 // src/lib/commands/start/start.ts
 async function start(request, response) {
-  console.log("Start command received.");
+  console.info("Start command received.");
   const message = request.body;
   const discordId = message?.member?.user.id;
   try {
@@ -98217,7 +98217,7 @@ async function start(request, response) {
       return response.status(200).json({
         type: import_discord_interactions3.InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
-          content: "(error) Some edge-case around creating a user, maybe try again."
+          content: "Some error edge-case around creating a user, maybe try again."
         }
       });
     }
@@ -98266,7 +98266,7 @@ async function start(request, response) {
     return response.status(200).json({
       type: import_discord_interactions3.InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        content: "(error) Something went wrong while creating your pet, maybe try again."
+        content: "Something went wrong while creating your pet, maybe try again."
       }
     });
   }
@@ -98274,17 +98274,15 @@ async function start(request, response) {
 
 // src/lib/commands/info/info.ts
 var import_discord_interactions4 = __toESM(require_dist(), 1);
+
+// src/lib/fp/format/discord-message-formats/format-message-start-comand.ts
+var FORMAT_MESSAGE_START_COMMAND = `</start:1341192808157151326>`;
+
+// src/lib/commands/info/info.ts
 var info = async (request, response) => {
+  console.info("Info command received.");
   const message = request.body;
   const discordId = message?.member?.user.id;
-  if (!discordId) {
-    return response.status(200).json({
-      type: import_discord_interactions4.InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-      data: {
-        content: "Could not find your Discord ID."
-      }
-    });
-  }
   try {
     const user = await db.query.petUsers.findFirst({
       where: eq(petUsers.discordId, discordId),
@@ -98292,29 +98290,41 @@ var info = async (request, response) => {
         pet: true
       }
     });
-    if (!user || !user.pet) {
-      return response.status(200).json({
-        type: import_discord_interactions4.InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-          content: "You don't have a Clamagotchi yet! Use `/start` to create one."
-        }
-      });
-    }
+    const validUser = user;
     return response.status(200).json({
       type: import_discord_interactions4.InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
         embeds: [
-          formatEmbedInfoGeneral(user.pet),
-          formatEmbedInfoImage(user.pet)
+          formatEmbedInfoGeneral(validUser.pet),
+          formatEmbedInfoImage(validUser.pet)
         ]
       }
     });
   } catch (error) {
     console.error("Error in info command:", error);
+    if (error && typeof error === "object" && "code" in error) {
+      const dbError = error;
+      switch (dbError.code) {
+        case "42P01":
+          return response.status(200).json({
+            type: import_discord_interactions4.InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+            data: {
+              content: `You don't have a Clamagotchi yet! Use ${FORMAT_MESSAGE_START_COMMAND} to create one.`
+            }
+          });
+        default:
+          return response.status(200).json({
+            type: import_discord_interactions4.InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+            data: {
+              content: "Something went wrong with the database, please try again later."
+            }
+          });
+      }
+    }
     return response.status(200).json({
       type: import_discord_interactions4.InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        content: "Something went wrong while fetching your pet."
+        content: "Something went wrong while fetching your pet, maybe try again."
       }
     });
   }
@@ -98326,6 +98336,7 @@ import { readFileSync } from "fs";
 import { join } from "path";
 var helpText = readFileSync(join(process.cwd(), "src/lib/commands/help/help-text.md"), "utf-8");
 var help = (request, response) => {
+  console.info("Help command received.");
   return response.status(200).json({
     type: import_discord_interactions5.InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
     data: {
@@ -98337,6 +98348,7 @@ var help = (request, response) => {
 // src/lib/commands/show/show.ts
 var import_discord_interactions6 = __toESM(require_dist(), 1);
 var show = async (request, response) => {
+  console.info("Show command received.");
   const message = request.body;
   const discordId = message?.member?.user.id;
   try {
@@ -98365,7 +98377,7 @@ var show = async (request, response) => {
     return response.status(200).json({
       type: import_discord_interactions6.InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        content: "(error) Something went wrong while fetching your pet, maybe try again"
+        content: "Something went wrong while fetching your pet, maybe try again"
       }
     });
   }
@@ -98374,6 +98386,7 @@ var show = async (request, response) => {
 // src/lib/commands/random/random.ts
 var import_discord_interactions7 = __toESM(require_dist(), 1);
 var random = async (request, response) => {
+  console.info("Random command received.");
   try {
     const randomImageUrl = await fetchRandomAvatarUrl();
     const randomName = await createClamagotchiName();
@@ -98391,7 +98404,7 @@ var random = async (request, response) => {
     return response.status(200).json({
       type: import_discord_interactions7.InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        content: "Something went wrong while generating a random Clamagotchi."
+        content: "Something went wrong while generating a random Clamagotchi, maybe try again."
       }
     });
   }

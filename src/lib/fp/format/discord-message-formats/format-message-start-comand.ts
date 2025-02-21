@@ -1,1 +1,1 @@
-export const formatMessageStartCommand = () => `</start:1341192808157151326>`;
+export const FORMAT_MESSAGE_START_COMMAND = `</start:1341192808157151326>`;

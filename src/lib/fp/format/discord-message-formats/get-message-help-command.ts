@@ -1,1 +1,1 @@
-export const getMessageHelpCommand = () => `</help:1341866102124449864>`;
+export const FORMAT_MESSAGE_HELP_COMMAND = `</help:1341866102124449864>`;

@@ -1,6 +1,6 @@
 import { verifyDiscordKey } from "@/lib/fp/verify-key-discord";
 import { VercelRequest, VercelResponse } from "@vercel/node";
-import { InteractionResponseType, InteractionType } from "discord-interactions";
+import { InteractionType } from "discord-interactions";
 import {
   respondInfo,
   respondInvalid,
@@ -9,23 +9,7 @@ import {
   setResponseHeaders,
 } from "@/lib/responses/handshake";
 import { start } from "@/lib/commands/start/start";
-import {
-  respond,
-  respondError,
-  respondSuccess,
-} from "@/lib/responses/generic-response";
-import { MessageFlags } from "discord.js";
-import { createClamagotchiName } from "@/lib/fp/create-clamagotchi-name";
-import { fetchRandomAvatarUrl } from "@/lib/fp/fetch-random-avatar-url";
-import { formatTest } from "@/lib/fp/format/format-test";
-import { sendFollowUp } from "@/lib/responses/send-follow-up";
-import { formatEmbedInfoGeneral } from "@/lib/fp/format/embed/info-general";
-import { formatEmbedInfoStats } from "@/lib/fp/format/embed/info-stats";
-import { formatEmbedInfoImage } from "@/lib/fp/format/embed/info-image";
 import { info } from "@/lib/commands/info/info";
-import { formatMessageInfoCommand } from "@/lib/fp/format/discord-message-formats/format-message-info-command";
-import { sendWebhookResponse } from "@/lib/responses/send-webhook-response";
-import { sendDeferredResponse } from "@/lib/responses/send-deferred-response";
 import { help } from "@/lib/commands/help/help";
 import { show } from "@/lib/commands/show/show";
 import { random } from "@/lib/commands/random/random";

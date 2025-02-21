@@ -1,1 +1,1 @@
-export const formatMessageInfoCommand = () => `</info:1341556601961709682>`;
+export const FORMAT_MESSAGE_INFO_COMMAND = `</info:1341556601961709682>`;
