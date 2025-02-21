@@ -67,7 +67,6 @@ export const pets = pgTable("pets", {
   // Timestamps
   lastFed: timestamp("last_fed").notNull().defaultNow(),
   lastDrank: timestamp("last_drank").notNull().defaultNow(),
-  lastActivity: timestamp("last_activity").notNull().defaultNow(),
 
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
