@@ -71,7 +71,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
 
   if (message.type === InteractionType.MESSAGE_COMPONENT) {
     const [action, tradeId] = message.data.custom_id.split(":");
-    const [traderId, targetId, timestamp] = tradeId.split("-");
+    const [traderId, targetId] = tradeId.split("-");
 
     // Check if the user clicking is the target
     const interactorId = message?.member?.user.id as string;

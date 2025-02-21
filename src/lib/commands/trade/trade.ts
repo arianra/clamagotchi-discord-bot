@@ -53,7 +53,9 @@ export const trade = async (
 
     // Check if both users exist and have pets
     if (!trader[0]?.pet || !target[0]?.pet) {
-      const missingPet = !trader[0]?.pet ? "You don't" : "They don't";
+      const missingPet = !trader[0]?.pet
+        ? "You don't"
+        : `<@${targetId}> doesn't`;
       return response.status(200).json({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
