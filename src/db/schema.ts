@@ -15,12 +15,14 @@ import {
   DB_ENUM_GENDER,
   DB_ENUM_MATURITY,
   DB_ENUM_PERSONALITY,
+  DB_ENUM_TRADE_STATUS,
 } from "../lib/constants/db-enums";
 
 // Enums
 export const personalityEnum = pgEnum("personality", DB_ENUM_PERSONALITY);
 export const genderEnum = pgEnum("gender", DB_ENUM_GENDER);
 export const maturityEnum = pgEnum("maturity", DB_ENUM_MATURITY);
+export const tradeStatusEnum = pgEnum("trade_status", DB_ENUM_TRADE_STATUS);
 
 // Pet Users table
 export const petUsers = pgTable("pet_users", {
@@ -95,6 +97,14 @@ export const petItems = pgTable("pet_items", {
     .notNull(),
   quantity: integer("quantity").notNull().default(1),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Trades table
+export const trades = pgTable("trades", {
+  tradeId: text("trade_id").primaryKey(), // The composite ID we generate
+  status: tradeStatusEnum("status").notNull().default(DB_ENUM_TRADE_STATUS[0]),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  completedAt: timestamp("completed_at"),
 });
 
 // Relations

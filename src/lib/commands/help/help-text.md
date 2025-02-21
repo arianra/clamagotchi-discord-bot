@@ -6,4 +6,5 @@
 - </info:1341556601961709682> - Check on your pet's status
 - </show:1342236892305031178> - Show your Clamagotchi image
 - </random:1342236892305031179> - Show a random Clamagotchi image
+- </trade:1342363761939316859> - Trade your Clamagotchi with another player
 - </help:1341866102124449864> - Show this help guide

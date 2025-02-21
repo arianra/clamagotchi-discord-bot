@@ -34,3 +34,9 @@ export const DB_ENUM_MATURITY: readonly [string, ...string[]] = [
   "ELDER",
   "ANCIENT",
 ];
+
+export const DB_ENUM_TRADE_STATUS = [
+  "pending",
+  "completed",
+  "declined",
+] as const;
