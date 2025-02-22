@@ -16,8 +16,9 @@ import { getRandomPersonality } from "@/lib/fp/creation/get-random-personality";
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import { InteractionResponseType } from "discord-interactions";
 import { formatEmbedInfoGeneral } from "@/lib/fp/format/embed/info-general";
-import { formatEmbedInfoStats } from "@/lib/fp/format/embed/info-stats";
 import { formatEmbedInfoImage } from "@/lib/fp/format/embed/info-image";
+
+const START_PEARL_AMOUNT = 250;
 
 export async function start(
   request: VercelRequest,
@@ -92,6 +93,7 @@ export async function start(
         imageUrl,
         personality,
         gender,
+        pearls: START_PEARL_AMOUNT,
         ...stats,
       })
       .returning();
