@@ -2,7 +2,7 @@ export const INTERACT_ACTIONS = [
   "wine and dine",
   "clap",
   "meditate",
-  "attack",
+  "challenge",
   "play",
   "explore",
 ] as const;

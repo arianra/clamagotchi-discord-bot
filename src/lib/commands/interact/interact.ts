@@ -17,8 +17,8 @@ const getInteractionEmoji = (action: InteractAction) => {
       return "👏";
     case "meditate":
       return "🧘";
-    case "attack":
-      return "⚔️";
+    case "challenge":
+      return "👄";
     case "play":
       return "🎮";
     case "explore":
@@ -32,7 +32,7 @@ const INTERACTION_VERBS: Record<InteractAction, string> = {
   "wine and dine": "wined and dined",
   clap: "clapped",
   meditate: "meditated",
-  attack: "sparred",
+  challenge: "frollicked",
   play: "played",
   explore: "explored",
 } as const;
