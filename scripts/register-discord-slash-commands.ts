@@ -4,6 +4,7 @@ import { HELP_COMMAND } from "../src/lib/commands/help/help-command";
 import { SHOW_COMMAND } from "../src/lib/commands/show/show-command";
 import { RANDOM_COMMAND } from "../src/lib/commands/random/random-command";
 import { TRADE_COMMAND } from "../src/lib/commands/trade/trade-command";
+import { INTERACT_COMMAND } from "@/lib/commands/interact/interact-command";
 console.log(`PUBLIC_KEY: ${process.env.PUBLIC_KEY}`);
 
 (async () => {
@@ -22,6 +23,7 @@ console.log(`PUBLIC_KEY: ${process.env.PUBLIC_KEY}`);
         SHOW_COMMAND,
         RANDOM_COMMAND,
         TRADE_COMMAND,
+        INTERACT_COMMAND,
       ]),
     }
   );

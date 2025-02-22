@@ -22,6 +22,7 @@ import { acceptTrade } from "@/lib/commands/trade/accept-trade";
 import { declineTrade } from "@/lib/commands/trade/decline-trade";
 import { trade } from "@/lib/commands/trade/trade";
 import { tradeComponentInteraction } from "@/lib/commands/trade/trade-component-interaction";
+import { interact } from "@/lib/commands/interact/interact";
 
 export default async (request: VercelRequest, response: VercelResponse) => {
   if (request.method !== "POST") {
@@ -68,6 +69,10 @@ export default async (request: VercelRequest, response: VercelResponse) => {
 
   if (message.data.name === "trade") {
     return trade(request, response);
+  }
+
+  if (message.data.name === "interact") {
+    return interact(request, response);
   }
 
   if (message.type === InteractionType.MESSAGE_COMPONENT) {
