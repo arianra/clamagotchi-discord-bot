@@ -1,13 +1,25 @@
 import { Pet } from "@/lib/types/Pet";
-import { getXPForLevel } from "./get-xp-for-level";
+import { getXpForLevel } from "./get-xp-for-level";
+import { getMaturityForLevel } from "./maturity-level";
 import {
   asPositivePoints,
   distributeRandomPhysicalStats,
 } from "./distribute-random-physical-stats";
+import { DB_ENUM_MATURITY, MaturityType } from "@/lib/constants/db-enums";
 
 interface LevelUpResult {
   pet: Pet;
   didLevelUp: boolean;
+  oldLevel: number;
+  newLevel: number;
+  oldStats: {
+    intelligence: number;
+    fitness: number;
+    reflective: number;
+    reactive: number;
+    carapace: number;
+    regeneration: number;
+  };
   newStats?: {
     intelligence: number;
     fitness: number;
@@ -16,14 +28,29 @@ interface LevelUpResult {
     carapace: number;
     regeneration: number;
   };
+  hasEvolved?: boolean;
+  oldMaturity?: MaturityType;
+  newMaturity?: MaturityType;
 }
 
 export const levelUpPet = (pet: Pet, xpToAdd: number): LevelUpResult => {
   const newXP = pet.experience + xpToAdd;
-  const currentLevelXP = getXPForLevel(pet.level);
-  const nextLevelXP = getXPForLevel(pet.level + 1);
+  let currentLevel = pet.level;
+  let hasEvolved = false;
+  let oldMaturity = pet.maturity as MaturityType;
+  let newMaturity = pet.maturity as MaturityType;
 
-  // If we haven't reached next level
+  const oldStats = {
+    intelligence: pet.intelligence,
+    fitness: pet.fitness,
+    reflective: pet.reflective,
+    reactive: pet.reactive,
+    carapace: pet.carapace,
+    regeneration: pet.regeneration,
+  };
+
+  // Check if we have enough XP for any level ups
+  const nextLevelXP = getXpForLevel(currentLevel + 1);
   if (newXP < nextLevelXP) {
     return {
       pet: {
@@ -31,27 +58,60 @@ export const levelUpPet = (pet: Pet, xpToAdd: number): LevelUpResult => {
         experience: newXP,
       },
       didLevelUp: false,
+      oldLevel: pet.level,
+      newLevel: currentLevel,
+      oldStats,
+      newStats: oldStats,
     };
   }
 
-  // Level up occurred
-  const newLevel = pet.level + 1;
-  const statPoints = newLevel % 10 === 0 ? 10 : 5;
-  const newStats = distributeRandomPhysicalStats(asPositivePoints(statPoints));
+  // Calculate final level and accumulate stat changes
+  let accumulatedStats = { ...oldStats };
+
+  while (true) {
+    const nextLevelThreshold = getXpForLevel(currentLevel + 1);
+    if (newXP < nextLevelThreshold) break;
+
+    currentLevel++;
+    const statPoints = currentLevel % 10 === 0 ? 10 : 5;
+    const levelStats = distributeRandomPhysicalStats(
+      asPositivePoints(statPoints)
+    );
+
+    // Check for maturity evolution at this level
+    const maturityAtLevel = getMaturityForLevel(currentLevel);
+    if (maturityAtLevel !== newMaturity) {
+      hasEvolved = true;
+      newMaturity = maturityAtLevel;
+    }
+
+    // Add new stats to accumulated total
+    accumulatedStats = {
+      intelligence:
+        accumulatedStats.intelligence + (levelStats?.intelligence ?? 0),
+      fitness: accumulatedStats.fitness + (levelStats?.fitness ?? 0),
+      reflective: accumulatedStats.reflective + (levelStats?.reflective ?? 0),
+      reactive: accumulatedStats.reactive + (levelStats?.reactive ?? 0),
+      carapace: accumulatedStats.carapace + (levelStats?.carapace ?? 0),
+      regeneration:
+        accumulatedStats.regeneration + (levelStats?.regeneration ?? 0),
+    };
+  }
 
   return {
     pet: {
       ...pet,
-      level: newLevel,
+      level: currentLevel,
       experience: newXP,
-      intelligence: pet.intelligence + (newStats?.intelligence ?? 0),
-      fitness: pet.fitness + (newStats?.fitness ?? 0),
-      reflective: pet.reflective + (newStats?.reflective ?? 0),
-      reactive: pet.reactive + (newStats?.reactive ?? 0),
-      carapace: pet.carapace + (newStats?.carapace ?? 0),
-      regeneration: pet.regeneration + (newStats?.regeneration ?? 0),
+      maturity: newMaturity,
+      ...accumulatedStats,
     },
     didLevelUp: true,
-    newStats,
+    oldLevel: pet.level,
+    newLevel: currentLevel,
+    oldStats,
+    newStats: accumulatedStats,
+    hasEvolved,
+    ...(hasEvolved && { oldMaturity, newMaturity }),
   };
 };
