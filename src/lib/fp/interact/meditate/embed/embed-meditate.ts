@@ -43,10 +43,13 @@ export const createMeditateEmbed = (info: MeditateEmbedInfo) => {
     )
     .addFields({
       name: "Stats Changed",
-      value: `Tiredness: ${formatStatChange(
-        info.oldTiredness,
-        info.newTiredness
-      )}`,
+      value:
+        info.newTiredness === info.oldTiredness
+          ? "🎗️ You are well rested."
+          : `Tiredness: ${formatStatChange(
+              info.oldTiredness,
+              info.newTiredness
+            )}`,
       inline: true,
     })
     .setFooter({
