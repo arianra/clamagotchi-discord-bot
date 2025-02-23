@@ -8,8 +8,8 @@ import { handleActivity } from "../get-activity-effort";
 import { ActivityType } from "../activities";
 
 const MEDITATION_COOLDOWN = 5 * 60 * 1000; // 5 minutes in milliseconds
-const BASE_XP_GAIN = 15;
-const BASE_TIREDNESS_REDUCTION = 0.15; // 15% tiredness reduction
+const BASE_XP_GAIN = 1;
+const BASE_TIREDNESS_REDUCTION = 0.1; // 10% tiredness reduction
 
 interface MeditateResult {
   success: boolean;
@@ -34,7 +34,7 @@ export const handleMeditate = (
 ): MeditateResult => {
   // Calculate time since last meditation
   const timeSinceLastMeditate = pet.lastRest
-    ? currentTime - pet.lastRest
+    ? currentTime - pet.lastRest.getTime()
     : MEDITATION_COOLDOWN;
 
   // Calculate effectiveness multiplier (0.2 to 1.0 based on cooldown)

@@ -9,6 +9,7 @@ import { MaturityType } from "@/lib/constants/db-enums";
 
 export interface LevelUpResult {
   pet: Pet;
+  adjustedXpToAdd: number;
   didLevelUp: boolean;
   oldLevel: number;
   newLevel: number;
@@ -74,6 +75,7 @@ export const levelUpPet = (pet: PetLevel, xpToAdd: number): LevelUpResult => {
         ...pet,
         experience: newXP,
       } as Pet,
+      adjustedXpToAdd,
       didLevelUp: false,
       oldLevel: pet.level,
       newLevel: currentLevel,
@@ -123,6 +125,7 @@ export const levelUpPet = (pet: PetLevel, xpToAdd: number): LevelUpResult => {
       maturity: newMaturity,
       ...accumulatedStats,
     } as Pet,
+    adjustedXpToAdd,
     didLevelUp: true,
     oldLevel: pet.level,
     newLevel: currentLevel,

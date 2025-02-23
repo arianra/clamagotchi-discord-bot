@@ -26,9 +26,11 @@ export const createLevelEmbed = (levelResult: LevelUpResult) => {
       .setColor(getRandomColor(700))
       .setTitle(`${EMOJI_CLAM} Experience Gained! ${EMOJI_CLAM}`)
       .setDescription(
-        `**${levelResult.pet.name}** gained experience! (${
-          levelResult.pet.experience
-        }/${getXpForLevel(levelResult.pet.level)} XP)`
+        `**${levelResult.pet.name}** gained ${
+          levelResult.adjustedXpToAdd
+        } experience! (${levelResult.pet.experience}/${getXpForLevel(
+          levelResult.pet.level
+        )} XP)`
       )
       .setFooter({
         text: `(Tiredness, Fitness & Maturity affect XP gain.)`,
@@ -96,9 +98,11 @@ export const createLevelEmbed = (levelResult: LevelUpResult) => {
   // Add XP progress field
   embed.addFields({
     name: "Experience",
-    value: `Progress: ${levelResult.pet.experience}/${getXpForLevel(
-      levelResult.newLevel
-    )} XP`,
+    value:
+      `XP Gained: ${levelResult.adjustedXpToAdd}\n` +
+      `Progress: ${levelResult.pet.experience}/${getXpForLevel(
+        levelResult.newLevel
+      )} XP`,
     inline: false,
   });
 
