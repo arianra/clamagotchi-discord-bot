@@ -110,7 +110,7 @@ export const handleFeed = (pet: PetFeedType, pearls: number): FeedResult => {
   );
 
   // Calculate new hunger, ensuring it doesn't go below 0
-  const hungerReduction = food.fillingness * 0.025; // 2.5% of fillingness
+  const hungerReduction = food.fillingness * 0.0125; // 1.25% of fillingness
   const newHunger = Math.max(0, pet.hunger - hungerReduction);
 
   // Calculate XP gained from feeding (example values)
