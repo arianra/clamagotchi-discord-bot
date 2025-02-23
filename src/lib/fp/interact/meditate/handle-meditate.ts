@@ -9,7 +9,7 @@ import { ActivityType } from "../activities";
 
 const MEDITATION_COOLDOWN = 5 * 60 * 1000; // 5 minutes in milliseconds
 const BASE_XP_GAIN = 1;
-const BASE_TIREDNESS_REDUCTION = 0.1; // 10% tiredness reduction
+const BASE_TIREDNESS_REDUCTION = 0.05; // 5% tiredness reduction
 
 interface MeditateResult {
   success: boolean;
@@ -37,9 +37,9 @@ export const handleMeditate = (
     ? currentTime - pet.lastRest.getTime()
     : MEDITATION_COOLDOWN;
 
-  // Calculate effectiveness multiplier (0.2 to 1.0 based on cooldown)
+  // Calculate effectiveness multiplier (0.1 to 1.0 based on cooldown)
   const effectivenessMultiplier = Math.min(
-    Math.max(timeSinceLastMeditate / MEDITATION_COOLDOWN, 0.2),
+    Math.max(timeSinceLastMeditate / MEDITATION_COOLDOWN, 0.1),
     1.0
   );
 
@@ -54,7 +54,9 @@ export const handleMeditate = (
 
   // Calculate tiredness reduction
   const tirenessReduction =
-    BASE_TIREDNESS_REDUCTION * insight.restMultiplier * effectivenessMultiplier;
+    (BASE_TIREDNESS_REDUCTION +
+      BASE_TIREDNESS_REDUCTION * (insight.restMultiplier - 1)) *
+    effectivenessMultiplier;
 
   // Calculate new tiredness
   const newTiredness = Math.max(0, pet.tiredness - tirenessReduction);

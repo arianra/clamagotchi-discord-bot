@@ -24,7 +24,7 @@ export const createLevelEmbed = (levelResult: LevelUpResult) => {
   if (!levelResult.didLevelUp) {
     return new EmbedBuilder()
       .setColor(getRandomColor(700))
-      .setTitle(`${EMOJI_CLAM} Experience Gained! ${EMOJI_CLAM}`)
+      .setTitle(`${EMOJI_CLAM} Experience Gained!`)
       .setDescription(
         `**${levelResult.pet.name}** gained ${
           levelResult.adjustedXpToAdd
@@ -73,7 +73,7 @@ export const createLevelEmbed = (levelResult: LevelUpResult) => {
 
   const embed = new EmbedBuilder()
     .setColor(getRandomColor(700))
-    .setTitle(`${EMOJI_CLAM} Level Up! ${EMOJI_CLAM}`)
+    .setTitle(`${EMOJI_CLAM} Level Up!}`)
     .setDescription(
       `**${levelResult.pet.name}** has reached level **${levelResult.newLevel}**!`
     )
