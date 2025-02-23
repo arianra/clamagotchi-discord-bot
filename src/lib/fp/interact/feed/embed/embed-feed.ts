@@ -48,8 +48,8 @@ export const createFeedEmbed = (info: FeedEmbedInfo) => {
 
   return new EmbedBuilder()
     .setColor(getRandomColor(700))
-    .setTitle(`${EMOJI_CLAM} Feeding Time: ${info.pet.name} ${EMOJI_CLAM}`)
-    .setDescription(info.reaction)
+    .setTitle(`🍽️ You fed ${info.pet.name}`)
+    .setDescription(`${info.pet.name}: ${info.reaction}`)
     .addFields(
       {
         name: "Food",
@@ -65,15 +65,18 @@ export const createFeedEmbed = (info: FeedEmbedInfo) => {
         name: "Stats Changed",
         value: [
           `Hunger: ${formatStatChange(info.oldHunger, info.newHunger)}`,
-          `Affection: ${formatStatChange(
-            info.oldAffection,
-            info.newAffection
-          )}`,
+          ...(info.oldAffection !== info.newAffection
+            ? [
+                `Affection: ${formatStatChange(
+                  info.oldAffection,
+                  info.newAffection
+                )}`,
+              ]
+            : []),
           `Pearls: ${formatStatChange(info.oldPearls, info.newPearls, false)}`,
         ].join("\n"),
         inline: true,
       }
     )
-    .setFooter({ text: "Feed your Clamagotchi regularly to keep them happy!" })
     .toJSON();
 };

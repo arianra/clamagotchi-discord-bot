@@ -94,7 +94,7 @@ export const createLevelEmbed = (levelResult: LevelUpResult) => {
   embed.addFields({
     name: "Experience",
     value: `Progress: ${levelResult.pet.experience}/${getXpForLevel(
-      levelResult.newLevel + 1
+      levelResult.newLevel
     )} XP`,
     inline: false,
   });
