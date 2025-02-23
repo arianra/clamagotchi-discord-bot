@@ -5,6 +5,9 @@ import { getFoodReaction } from "./food-reactions";
 import { getFoodPreferenceAffection } from "./food-preferences";
 import { PersonalityType } from "@/lib/constants/db-enums";
 import { levelUpPet, LevelUpResult } from "@/lib/fp/levelling/level-up-pet";
+import { createFeedEmbed } from "./embed/embed-feed";
+import { APIEmbed } from "discord.js";
+import { createLevelEmbed } from "@/lib/fp/format/embed/embed-level";
 
 const MAX_TIREDNESS = 0.8; // 80% tiredness cap for feeding
 const MAX_RETRIES = 5;
@@ -18,9 +21,28 @@ interface FeedResult {
   cost?: number;
   levelUpResult?: LevelUpResult;
   updatedPet?: Pet;
+  embeds?: APIEmbed[];
 }
+type PetFeedType = {
+  tiredness: number;
+  hunger: number;
+  personality: PersonalityType;
+  name: string;
+  affection: number;
+  experience: number;
+  level: number;
+  maturity: string;
+  intelligence: number;
+  fitness: number;
+  reflective: number;
+  reactive: number;
+  carapace: number;
+  regeneration: number;
+  pearls: number;
+  id: string;
+};
 
-export const handleFeed = (pet: Pet, pearls: number): FeedResult => {
+export const handleFeed = (pet: PetFeedType, pearls: number): FeedResult => {
   if (pet.tiredness >= MAX_TIREDNESS) {
     return {
       success: false,
@@ -99,7 +121,25 @@ export const handleFeed = (pet: Pet, pearls: number): FeedResult => {
   const xpGained = baseXpGain * tierMultiplier[food.tier];
   const levelUpResult = levelUpPet(pet, xpGained);
 
-  const message = `You feed **${pet.name}** some **${food.name}**.\n${reaction}`;
+  const embeds = [
+    createFeedEmbed({
+      pet,
+      foodKey: selectedFood,
+      oldHunger: pet.hunger,
+      newHunger,
+      oldAffection: pet.affection,
+      newAffection,
+      oldPearls: pet.pearls,
+      newPearls: pet.pearls - food.cost,
+      cost: food.cost,
+      reaction,
+    }),
+  ];
+
+  // Add level up embed if XP was gained
+  if (levelUpResult.pet.experience > pet.experience) {
+    embeds.push(createLevelEmbed(levelUpResult));
+  }
 
   const updatedPet = {
     ...levelUpResult.pet,
@@ -110,7 +150,8 @@ export const handleFeed = (pet: Pet, pearls: number): FeedResult => {
   return {
     success: true,
     cost: food.cost,
-    message,
+    embeds,
+    message: "",
     foodKey: selectedFood,
     newAffection,
     newHunger,

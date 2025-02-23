@@ -1,6 +1,6 @@
 import { Pet } from "@/lib/types/Pet";
 import { getXpForLevel } from "./get-xp-for-level";
-import { getMaturityForLevel } from "./maturity-level";
+import { getMaturityForLevel, MATURITY_XP_MULTIPLIER } from "./maturity-level";
 import {
   asPositivePoints,
   distributeRandomPhysicalStats,
@@ -34,7 +34,12 @@ export interface LevelUpResult {
 }
 
 export const levelUpPet = (pet: Pet, xpToAdd: number): LevelUpResult => {
-  const newXP = pet.experience + xpToAdd;
+  // Apply maturity multiplier and ensure minimum XP gain of 1
+  const maturityMultiplier =
+    MATURITY_XP_MULTIPLIER[pet.maturity as MaturityType];
+  const adjustedXpToAdd = Math.max(1, Math.ceil(xpToAdd * maturityMultiplier));
+
+  const newXP = pet.experience + adjustedXpToAdd;
   let currentLevel = pet.level;
   let hasEvolved = false;
   let oldMaturity = pet.maturity as MaturityType;

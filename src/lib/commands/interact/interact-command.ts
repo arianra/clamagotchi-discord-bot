@@ -1,11 +1,4 @@
-export const INTERACT_ACTIONS = [
-  "wine and dine",
-  "clap",
-  "meditate",
-  "challenge",
-  "play",
-  "explore",
-] as const;
+import { INTERACT_ACTIONS } from "@/lib/fp/interact/activities";
 
 export const INTERACT_COMMAND = {
   name: "interact",

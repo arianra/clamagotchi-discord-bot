@@ -3,11 +3,14 @@ import { db } from "@db/index";
 import { pets, petUsers } from "@db/schema";
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import { InteractionResponseType } from "discord-interactions";
-import { Pet } from "@/lib/types/Pet";
-import { INTERACT_ACTIONS } from "./interact-command";
 import { FORMAT_MESSAGE_START_COMMAND } from "@/lib/fp/format/discord-message-formats/format-message-start-comand";
-
-type InteractAction = (typeof INTERACT_ACTIONS)[number];
+import { handleFeed } from "@/lib/fp/interact/feed/handle-feed";
+import {
+  ActivityType,
+  ACTIVITY_MAP,
+  InteractAction,
+} from "@/lib/fp/interact/activities";
+import { MaturityType } from "@/lib/constants/db-enums";
 
 const getInteractionEmoji = (action: InteractAction) => {
   switch (action) {
@@ -45,7 +48,7 @@ export const interact = async (
 
   const message = request.body;
   const discordId = message?.member?.user.id as string;
-  const action = message.data.options[0].value as InteractAction;
+  const action = message.data.options[0].value as keyof typeof ACTIVITY_MAP;
 
   try {
     const user = await db.query.petUsers.findFirst({
@@ -64,6 +67,49 @@ export const interact = async (
       });
     }
 
+    const activityType = ACTIVITY_MAP[action];
+
+    if (activityType === ActivityType.FEED) {
+      const feedResult = handleFeed(user.pet, user.pet.pearls);
+
+      if (!feedResult.success) {
+        return response.status(200).json({
+          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+          data: {
+            content: feedResult.message,
+          },
+        });
+      }
+
+      // Update pet stats and pearls in one update
+      await db
+        .update(pets)
+        .set({
+          hunger: feedResult.updatedPet!.hunger,
+          affection: feedResult.updatedPet!.affection,
+          experience: feedResult.updatedPet!.experience,
+          level: feedResult.updatedPet!.level,
+          maturity: feedResult.updatedPet!.maturity as MaturityType,
+          intelligence: feedResult.updatedPet!.intelligence,
+          fitness: feedResult.updatedPet!.fitness,
+          reflective: feedResult.updatedPet!.reflective,
+          reactive: feedResult.updatedPet!.reactive,
+          carapace: feedResult.updatedPet!.carapace,
+          regeneration: feedResult.updatedPet!.regeneration,
+          pearls: user.pet.pearls - feedResult.cost!,
+          lastFed: new Date(),
+        })
+        .where(eq(pets.id, user.pet.id));
+
+      return response.status(200).json({
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          embeds: feedResult.embeds,
+        },
+      });
+    }
+
+    // Handle other activities...
     const emoji = getInteractionEmoji(action);
     return response.status(200).json({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,

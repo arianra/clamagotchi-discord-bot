@@ -1,5 +1,19 @@
 import { DB_ENUM_MATURITY } from "@/lib/constants/db-enums";
 
+export const MATURITY_XP_MULTIPLIER: Record<
+  (typeof DB_ENUM_MATURITY)[number],
+  number
+> = {
+  BABY: 0.25,
+  TODDLER: 0.5,
+  CHILD: 1,
+  TEEN: 1.25,
+  TWEEN: 1.5,
+  ADULT: 2,
+  ELDER: 2.5,
+  ANCIENT: 3,
+} as const;
+
 export const MATURITY_LEVELS: Record<
   (typeof DB_ENUM_MATURITY)[number],
   number
