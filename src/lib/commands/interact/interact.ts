@@ -96,6 +96,7 @@ export const interact = async (
           reactive: feedResult.updatedPet!.reactive,
           carapace: feedResult.updatedPet!.carapace,
           regeneration: feedResult.updatedPet!.regeneration,
+          tiredness: feedResult.updatedPet!.tiredness,
           pearls: user.pet.pearls - feedResult.cost!,
           lastFed: new Date(),
         })
@@ -104,6 +105,7 @@ export const interact = async (
       return response.status(200).json({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
+          content: JSON.stringify(feedResult),
           embeds: feedResult.embeds,
         },
       });
