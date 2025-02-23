@@ -20,12 +20,12 @@ export const MATURITY_LEVELS: Record<
 > = {
   BABY: 10,
   TODDLER: 20,
-  CHILD: 40,
-  TEEN: 60,
-  TWEEN: 80,
-  ADULT: 100,
-  ELDER: 120,
-  ANCIENT: 160,
+  CHILD: 30,
+  TEEN: 40,
+  TWEEN: 60,
+  ADULT: 80,
+  ELDER: 100,
+  ANCIENT: 120,
 } as const;
 
 export const getMaturityForLevel = (
