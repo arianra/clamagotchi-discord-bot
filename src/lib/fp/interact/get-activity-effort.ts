@@ -1,7 +1,7 @@
 import { Pet } from "@/lib/types/Pet";
 import { ActivityType } from "@/lib/fp/interact/activities";
 
-export const ActivityEffort = {
+export const activityEffort = {
   TRIVIAL: 0.03125, // 1/32  - Minimal effort (petting)
   VERY_LIGHT: 0.0625, // 2/32  - Very light (drinking)
   LIGHT: 0.09375, // 3/32  - Light effort (feeding)
@@ -17,12 +17,12 @@ export const ActivityEffort = {
 } as const;
 
 export const ACTIVITY_EFFORT: Record<ActivityType, number> = {
-  [ActivityType.FEED]: ActivityEffort.LIGHT,
-  [ActivityType.CLAP]: ActivityEffort.MODERATE,
-  [ActivityType.STUDY]: ActivityEffort.STANDARD,
-  [ActivityType.CHALLENGE]: ActivityEffort.CHALLENGING,
-  [ActivityType.PLAY]: ActivityEffort.MODERATE,
-  [ActivityType.EXPLORE]: ActivityEffort.STANDARD,
+  [ActivityType.FEED]: activityEffort.LIGHT,
+  [ActivityType.CLAP]: activityEffort.MODERATE,
+  [ActivityType.MEDITATE]: activityEffort.STANDARD,
+  [ActivityType.CHALLENGE]: activityEffort.CHALLENGING,
+  [ActivityType.PLAY]: activityEffort.MODERATE,
+  [ActivityType.EXPLORE]: activityEffort.STANDARD,
 } as const;
 
 export const getActivityEffort = (activity: ActivityType): number => {
@@ -31,7 +31,15 @@ export const getActivityEffort = (activity: ActivityType): number => {
 
 const FITNESS_REDUCTION_MULTIPLIER = 0.002; // 0.2% reduction per fitness point
 
-export const handleActivity = (pet: Pet, activityType: ActivityType) => {
+export type PetActivity = {
+  tiredness: number;
+  fitness: number;
+};
+
+export const handleActivity = (
+  pet: PetActivity,
+  activityType: ActivityType
+) => {
   const baseEffort = getActivityEffort(activityType);
 
   const fitnessMultiplier = Math.max(
@@ -53,9 +61,9 @@ export const handleActivity = (pet: Pet, activityType: ActivityType) => {
 
   // Could also affect XP gain
   const xpMultiplier =
-    pet.tiredness > 0.8
+    pet.tiredness > 0.9
       ? 0.5 // Half XP if very tired
-      : pet.tiredness > 0.6
+      : pet.tiredness > 0.8
       ? 0.8 // 80% XP if tired
       : 1; // Full XP
 

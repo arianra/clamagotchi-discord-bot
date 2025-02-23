@@ -1,5 +1,3 @@
-import { ActivityEffort } from "@/lib/fp/interact/get-activity-effort";
-
 export const INTERACT_ACTIONS = [
   "wine and dine",
   "clap",
@@ -9,24 +7,21 @@ export const INTERACT_ACTIONS = [
   "explore",
 ] as const;
 
-type InteractAction = (typeof INTERACT_ACTIONS)[number];
+export type InteractAction = (typeof INTERACT_ACTIONS)[number];
 
 export enum ActivityType {
   FEED = "FEED",
   CLAP = "CLAP",
-  STUDY = "STUDY",
+  MEDITATE = "MEDITATE",
   CHALLENGE = "CHALLENGE",
   PLAY = "PLAY",
   EXPLORE = "EXPLORE",
 }
 
-export const ACTIVITY_MAP: Record<
-  (typeof INTERACT_ACTIONS)[number],
-  ActivityType
-> = {
+export const ACTIVITY_MAP: Record<InteractAction, ActivityType> = {
   "wine and dine": ActivityType.FEED,
   clap: ActivityType.CLAP,
-  meditate: ActivityType.STUDY,
+  meditate: ActivityType.MEDITATE,
   challenge: ActivityType.CHALLENGE,
   play: ActivityType.PLAY,
   explore: ActivityType.EXPLORE,

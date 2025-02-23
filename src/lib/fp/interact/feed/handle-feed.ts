@@ -8,6 +8,8 @@ import { levelUpPet, LevelUpResult } from "@/lib/fp/levelling/level-up-pet";
 import { createFeedEmbed } from "./embed/embed-feed";
 import { APIEmbed } from "discord.js";
 import { createLevelEmbed } from "@/lib/fp/format/embed/embed-level";
+import { ActivityType } from "../activities";
+import { ActivityEffort, handleActivity } from "../get-activity-effort";
 
 const MAX_TIREDNESS = 0.8; // 80% tiredness cap for feeding
 const MAX_RETRIES = 5;
@@ -22,6 +24,7 @@ interface FeedResult {
   levelUpResult?: LevelUpResult;
   updatedPet?: Pet;
   embeds?: APIEmbed[];
+  newTiredness?: number;
 }
 type PetFeedType = {
   tiredness: number;
@@ -118,7 +121,14 @@ export const handleFeed = (pet: PetFeedType, pearls: number): FeedResult => {
     [FoodTier.HIGH]: 2,
   };
 
-  const xpGained = baseXpGain * tierMultiplier[food.tier];
+  // Calculate new tiredness, capped at 1
+  const { newTiredness, xpMultiplier: xpMultiplierTiredness } = handleActivity(
+    pet,
+    ActivityType.FEED
+  );
+
+  const xpGained =
+    baseXpGain * tierMultiplier[food.tier] * xpMultiplierTiredness;
   const levelUpResult = levelUpPet(pet, xpGained);
 
   const embeds = [
@@ -131,6 +141,8 @@ export const handleFeed = (pet: PetFeedType, pearls: number): FeedResult => {
       newAffection,
       oldPearls: pet.pearls,
       newPearls: pet.pearls - food.cost,
+      oldTiredness: pet.tiredness,
+      newTiredness,
       cost: food.cost,
       reaction,
     }),
@@ -145,6 +157,7 @@ export const handleFeed = (pet: PetFeedType, pearls: number): FeedResult => {
     ...levelUpResult.pet,
     affection: newAffection,
     hunger: newHunger,
+    tiredness: newTiredness,
   };
 
   return {
@@ -157,5 +170,6 @@ export const handleFeed = (pet: PetFeedType, pearls: number): FeedResult => {
     newHunger,
     levelUpResult,
     updatedPet,
+    newTiredness,
   };
 };

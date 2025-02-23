@@ -99,5 +99,9 @@ export const createLevelEmbed = (levelResult: LevelUpResult) => {
     inline: false,
   });
 
+  embed.setFooter({
+    text: `Tiredness, Fitness & Maturity have effect on how much XP you gain.`,
+  });
+
   return embed.toJSON();
 };

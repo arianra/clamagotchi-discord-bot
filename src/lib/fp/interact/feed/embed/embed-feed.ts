@@ -17,6 +17,8 @@ interface FeedEmbedInfo {
   newAffection: number;
   oldPearls: number;
   newPearls: number;
+  oldTiredness: number;
+  newTiredness: number;
   cost: number;
   reaction: string;
 }
@@ -76,10 +78,17 @@ export const createFeedEmbed = (info: FeedEmbedInfo) => {
                 )}`,
               ]
             : []),
+          `Tiredness: ${formatStatChange(
+            info.oldTiredness,
+            info.newTiredness
+          )}`,
           `Pearls: ${formatStatChange(info.oldPearls, info.newPearls, false)}`,
         ].join("\n"),
         inline: true,
       }
     )
+    .setFooter({
+      text: `Food tiers have effect on how fulfilling the food is and how much xp you gain.`,
+    })
     .toJSON();
 };
