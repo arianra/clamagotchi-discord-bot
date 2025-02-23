@@ -18,14 +18,14 @@ export const MATURITY_LEVELS: Record<
   (typeof DB_ENUM_MATURITY)[number],
   number
 > = {
-  BABY: 1,
-  TODDLER: 2,
-  CHILD: 4,
-  TEEN: 10,
-  TWEEN: 20,
-  ADULT: 30,
-  ELDER: 60,
-  ANCIENT: 100,
+  BABY: 10,
+  TODDLER: 20,
+  CHILD: 40,
+  TEEN: 60,
+  TWEEN: 80,
+  ADULT: 100,
+  ELDER: 120,
+  ANCIENT: 160,
 } as const;
 
 export const getMaturityForLevel = (
