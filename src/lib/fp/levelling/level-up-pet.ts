@@ -5,9 +5,9 @@ import {
   asPositivePoints,
   distributeRandomPhysicalStats,
 } from "./distribute-random-physical-stats";
-import { DB_ENUM_MATURITY, MaturityType } from "@/lib/constants/db-enums";
+import { MaturityType } from "@/lib/constants/db-enums";
 
-interface LevelUpResult {
+export interface LevelUpResult {
   pet: Pet;
   didLevelUp: boolean;
   oldLevel: number;

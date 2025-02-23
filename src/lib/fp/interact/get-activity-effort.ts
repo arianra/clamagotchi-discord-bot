@@ -1,5 +1,5 @@
 import { Pet } from "@/lib/types/Pet";
-import { ActivityType } from "@/lib/constants/activities";
+import { ActivityType } from "@/lib/fp/interact/activities";
 
 export const ActivityEffort = {
   TRIVIAL: 0.03125, // 1/32  - Minimal effort (petting)

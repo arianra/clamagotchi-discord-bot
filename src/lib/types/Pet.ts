@@ -20,6 +20,7 @@ export type Pet = PhysicalStats & {
   experience: number;
   lastFed: Date;
   lastDrank: Date;
+  lastRest: Date;
   createdAt: Date;
   updatedAt: Date;
   meta: Record<string, unknown>;

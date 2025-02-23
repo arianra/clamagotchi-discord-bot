@@ -2,7 +2,7 @@ import { getRandomColor } from "@/lib/constants/colors";
 import { EMOJI_CLAM } from "@/lib/constants/emojis";
 import { Pet } from "@/lib/types/Pet";
 import { EmbedBuilder } from "discord.js";
-import { getXPForLevel } from "../../levelling/get-xp-for-level";
+import { getXpForLevel } from "../../levelling/get-xp-for-level";
 
 export const formatEmbedInfoGeneral = (pet: Pet, discordId: string) => {
   return new EmbedBuilder()
@@ -24,7 +24,7 @@ export const formatEmbedInfoGeneral = (pet: Pet, discordId: string) => {
         name: "General",
         value: [
           `Level: **${pet.level}**`,
-          `Experience: **${pet.experience}**/${getXPForLevel(pet.level)}`,
+          `Experience: **${pet.experience}**/${getXpForLevel(pet.level)}`,
           `Pearls: **${pet.pearls}**`,
         ].join("\n"),
         inline: true,

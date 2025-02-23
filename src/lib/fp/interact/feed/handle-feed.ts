@@ -4,6 +4,7 @@ import { FOOD_ITEMS, FoodTier } from "./food";
 import { getFoodReaction } from "./food-reactions";
 import { getFoodPreferenceAffection } from "./food-preferences";
 import { PersonalityType } from "@/lib/constants/db-enums";
+import { levelUpPet, LevelUpResult } from "@/lib/fp/levelling/level-up-pet";
 
 const MAX_TIREDNESS = 0.8; // 80% tiredness cap for feeding
 const MAX_RETRIES = 5;
@@ -15,6 +16,8 @@ interface FeedResult {
   newAffection?: number;
   newHunger?: number;
   cost?: number;
+  levelUpResult?: LevelUpResult;
+  updatedPet?: Pet;
 }
 
 export const handleFeed = (pet: Pet, pearls: number): FeedResult => {
@@ -85,12 +88,33 @@ export const handleFeed = (pet: Pet, pearls: number): FeedResult => {
   const hungerReduction = food.fillingness * 0.1; // 10% of fillingness
   const newHunger = Math.max(0, pet.hunger - hungerReduction);
 
+  // Calculate XP gained from feeding (example values)
+  const baseXpGain = 5; // Base XP for feeding
+  const tierMultiplier = {
+    [FoodTier.LOW]: 1,
+    [FoodTier.MEDIUM]: 1.5,
+    [FoodTier.HIGH]: 2,
+  };
+
+  const xpGained = baseXpGain * tierMultiplier[food.tier];
+  const levelUpResult = levelUpPet(pet, xpGained);
+
+  const message = `You feed **${pet.name}** some **${food.name}**.\n${reaction}`;
+
+  const updatedPet = {
+    ...levelUpResult.pet,
+    affection: newAffection,
+    hunger: newHunger,
+  };
+
   return {
     success: true,
-    message: `You feed **${pet.name}** some **${food.name}**.\n${reaction}`,
+    cost: food.cost,
+    message,
     foodKey: selectedFood,
     newAffection,
     newHunger,
-    cost: food.cost,
+    levelUpResult,
+    updatedPet,
   };
 };
