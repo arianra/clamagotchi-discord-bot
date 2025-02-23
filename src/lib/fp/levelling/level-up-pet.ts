@@ -32,8 +32,20 @@ export interface LevelUpResult {
   oldMaturity?: MaturityType;
   newMaturity?: MaturityType;
 }
+type PetLevel = {
+  experience: number;
+  level: number;
+  maturity: string;
+  intelligence: number;
+  fitness: number;
+  reflective: number;
+  reactive: number;
+  carapace: number;
+  regeneration: number;
+  name: string;
+};
 
-export const levelUpPet = (pet: Pet, xpToAdd: number): LevelUpResult => {
+export const levelUpPet = (pet: PetLevel, xpToAdd: number): LevelUpResult => {
   // Apply maturity multiplier and ensure minimum XP gain of 1
   const maturityMultiplier =
     MATURITY_XP_MULTIPLIER[pet.maturity as MaturityType];
@@ -61,7 +73,7 @@ export const levelUpPet = (pet: Pet, xpToAdd: number): LevelUpResult => {
       pet: {
         ...pet,
         experience: newXP,
-      },
+      } as Pet,
       didLevelUp: false,
       oldLevel: pet.level,
       newLevel: currentLevel,
@@ -110,7 +122,7 @@ export const levelUpPet = (pet: Pet, xpToAdd: number): LevelUpResult => {
       experience: newXP,
       maturity: newMaturity,
       ...accumulatedStats,
-    },
+    } as Pet,
     didLevelUp: true,
     oldLevel: pet.level,
     newLevel: currentLevel,

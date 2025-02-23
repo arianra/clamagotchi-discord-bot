@@ -1,12 +1,15 @@
 import { getRandomColor } from "@/lib/constants/colors";
 import { EMOJI_CLAM } from "@/lib/constants/emojis";
-import { Pet } from "@/lib/types/Pet";
 import { EmbedBuilder } from "discord.js";
 import { FoodKey } from "../food-keys";
 import { FOOD_ITEMS } from "../food";
 
+type PetFeedEmbed = {
+  name: string;
+};
+
 interface FeedEmbedInfo {
-  pet: Pet;
+  pet: PetFeedEmbed;
   foodKey: FoodKey;
   oldHunger: number;
   newHunger: number;
