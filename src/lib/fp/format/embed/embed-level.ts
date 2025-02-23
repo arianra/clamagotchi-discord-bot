@@ -28,7 +28,7 @@ export const createLevelEmbed = (levelResult: LevelUpResult) => {
       .setDescription(
         `**${levelResult.pet.name}** gained experience! (${
           levelResult.pet.experience
-        }/${getXpForLevel(levelResult.pet.level + 1)} XP)`
+        }/${getXpForLevel(levelResult.pet.level)} XP)`
       )
       .toJSON();
   }
