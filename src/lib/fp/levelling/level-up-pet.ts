@@ -86,7 +86,7 @@ export const levelUpPet = (pet: PetLevel, xpToAdd: number): LevelUpResult => {
   let accumulatedStats = { ...oldStats };
 
   while (true) {
-    const nextLevelThreshold = getXpForLevel(currentLevel + 1);
+    const nextLevelThreshold = getXpForLevel(currentLevel);
     if (newXP < nextLevelThreshold) break;
 
     currentLevel++;
