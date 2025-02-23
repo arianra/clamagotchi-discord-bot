@@ -48,7 +48,7 @@ export const createFeedEmbed = (info: FeedEmbedInfo) => {
 
   return new EmbedBuilder()
     .setColor(getRandomColor(700))
-    .setTitle(`🍽️ You fed ${info.pet.name}`)
+    .setTitle(`🍽️ You fed ${info.pet.name} a ${food.name}`)
     .setDescription(`${info.pet.name}: ${info.reaction}`)
     .addFields(
       {
