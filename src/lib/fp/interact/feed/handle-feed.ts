@@ -63,9 +63,9 @@ export const handleFeed = (pet: PetFeedType, pearls: number): FeedResult => {
 
   // Try to find affordable food, starting from highest tier
   let currentTier: FoodTier | null = null;
-  let attempts = 0;
   let selectedFood: FoodKey | null = null;
   let foodCost = Infinity;
+  let attempts = 0;
 
   while (attempts < MAX_RETRIES && foodCost > pearls) {
     selectedFood = getRandomFood(currentTier);
@@ -131,6 +131,8 @@ export const handleFeed = (pet: PetFeedType, pearls: number): FeedResult => {
   const xpGained =
     baseXpGain * tierMultiplier[food.tier] * xpMultiplierTiredness;
   const levelUpResult = levelUpPet(pet, xpGained);
+
+  console.log(levelUpResult);
 
   const embeds = [
     createFeedEmbed({
