@@ -105,7 +105,6 @@ export const interact = async (
       return response.status(200).json({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
-          content: JSON.stringify(feedResult),
           embeds: feedResult.embeds,
         },
       });
