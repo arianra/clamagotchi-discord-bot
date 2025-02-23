@@ -67,7 +67,7 @@ export const levelUpPet = (pet: PetLevel, xpToAdd: number): LevelUpResult => {
   };
 
   // Check if we have enough XP for any level ups
-  const nextLevelXP = getXpForLevel(currentLevel + 1);
+  const nextLevelXP = getXpForLevel(currentLevel);
   if (newXP < nextLevelXP) {
     return {
       pet: {
