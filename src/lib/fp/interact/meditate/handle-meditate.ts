@@ -36,13 +36,14 @@ export const handleMeditate = (
   const timeSinceLastMeditate = pet.lastRest
     ? currentTime - pet.lastRest.getTime()
     : MEDITATION_COOLDOWN;
+  console.log("timeSinceLastMeditate", timeSinceLastMeditate);
 
   // Calculate effectiveness multiplier (0.1 to 1.0 based on cooldown)
   const effectivenessMultiplier = Math.min(
     Math.max(timeSinceLastMeditate / MEDITATION_COOLDOWN, 0.1),
     1.0
   );
-
+  console.log("effectivenessMultiplier", effectivenessMultiplier);
   // Get random insight and its multipliers
   const insight = getRandomInsight();
 
@@ -57,6 +58,10 @@ export const handleMeditate = (
     (BASE_TIREDNESS_REDUCTION +
       BASE_TIREDNESS_REDUCTION * (insight.restMultiplier - 1)) *
     effectivenessMultiplier;
+  console.log("tirenessReduction", tirenessReduction);
+  console.log("BASE_TIREDNESS_REDUCTION", BASE_TIREDNESS_REDUCTION);
+  console.log("insight.restMultiplier", insight.restMultiplier);
+  console.log("effectivenessMultiplier", effectivenessMultiplier);
 
   // Calculate new tiredness
   const newTiredness = Math.max(0, pet.tiredness - tirenessReduction);
