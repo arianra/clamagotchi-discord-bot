@@ -11,6 +11,7 @@ import {
   InteractAction,
 } from "@/lib/fp/interact/activities";
 import { MaturityType } from "@/lib/constants/db-enums";
+import { handleMeditate } from "@/lib/fp/interact/meditate/handle-meditate";
 
 const getInteractionEmoji = (action: InteractAction) => {
   switch (action) {
@@ -106,6 +107,44 @@ export const interact = async (
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
           embeds: feedResult.embeds,
+        },
+      });
+    }
+
+    if (activityType === ActivityType.MEDITATE) {
+      const meditateResult = handleMeditate(user.pet, Date.now());
+
+      if (!meditateResult.success) {
+        return response.status(200).json({
+          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+          data: {
+            content: meditateResult.message,
+          },
+        });
+      }
+
+      // Update pet stats in database
+      await db
+        .update(pets)
+        .set({
+          tiredness: meditateResult.updatedPet!.tiredness,
+          experience: meditateResult.updatedPet!.experience,
+          level: meditateResult.updatedPet!.level,
+          maturity: meditateResult.updatedPet!.maturity as MaturityType,
+          intelligence: meditateResult.updatedPet!.intelligence,
+          fitness: meditateResult.updatedPet!.fitness,
+          reflective: meditateResult.updatedPet!.reflective,
+          reactive: meditateResult.updatedPet!.reactive,
+          carapace: meditateResult.updatedPet!.carapace,
+          regeneration: meditateResult.updatedPet!.regeneration,
+          lastRest: new Date(),
+        })
+        .where(eq(pets.id, user.pet.id));
+
+      return response.status(200).json({
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          embeds: meditateResult.embeds,
         },
       });
     }
