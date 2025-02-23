@@ -9,7 +9,7 @@ import { createFeedEmbed } from "./embed/embed-feed";
 import { APIEmbed } from "discord.js";
 import { createLevelEmbed } from "@/lib/fp/format/embed/embed-level";
 import { ActivityType } from "../activities";
-import { ActivityEffort, handleActivity } from "../get-activity-effort";
+import { handleActivity } from "../get-activity-effort";
 
 const MAX_TIREDNESS = 0.8; // 80% tiredness cap for feeding
 const MAX_RETRIES = 5;
@@ -110,7 +110,7 @@ export const handleFeed = (pet: PetFeedType, pearls: number): FeedResult => {
   );
 
   // Calculate new hunger, ensuring it doesn't go below 0
-  const hungerReduction = food.fillingness * 0.1; // 10% of fillingness
+  const hungerReduction = food.fillingness * 0.025; // 2.5% of fillingness
   const newHunger = Math.max(0, pet.hunger - hungerReduction);
 
   // Calculate XP gained from feeding (example values)
