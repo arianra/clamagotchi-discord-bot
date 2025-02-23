@@ -88,7 +88,7 @@ export const createFeedEmbed = (info: FeedEmbedInfo) => {
       }
     )
     .setFooter({
-      text: `Food tiers have effect on how fulfilling the food is and how much xp you gain.`,
+      text: `(Food tiers affect how fulfilling the food is & how much xp you gain.)`,
     })
     .toJSON();
 };

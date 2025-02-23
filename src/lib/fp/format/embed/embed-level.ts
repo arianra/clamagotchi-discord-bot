@@ -31,7 +31,7 @@ export const createLevelEmbed = (levelResult: LevelUpResult) => {
         }/${getXpForLevel(levelResult.pet.level)} XP)`
       )
       .setFooter({
-        text: `Tiredness, Fitness & Maturity have effect on how much XP you gain.`,
+        text: `(Tiredness, Fitness & Maturity affect XP gain.)`,
       })
       .toJSON();
   }
