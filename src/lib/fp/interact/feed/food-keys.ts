@@ -56,7 +56,7 @@ export enum FoodKey {
   MYTHICAL_MARITIME_MEAL = "mythical maritime meal",
 }
 
-export const getRandomFood = (tier?: FoodTier): FoodKey => {
+export const getRandomFood = (tier?: FoodTier | null): FoodKey => {
   const allFoods = Object.values(FoodKey);
 
   if (!tier) {

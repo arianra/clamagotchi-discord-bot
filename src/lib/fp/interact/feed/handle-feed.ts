@@ -62,13 +62,14 @@ export const handleFeed = (pet: PetFeedType, pearls: number): FeedResult => {
   }
 
   // Try to find affordable food, starting from highest tier
-  let currentTier: FoodTier = FoodTier.HIGH;
+  let currentTier: FoodTier | null = null;
   let attempts = 0;
   let selectedFood: FoodKey | null = null;
   let foodCost = Infinity;
 
   while (attempts < MAX_RETRIES && foodCost > pearls) {
     selectedFood = getRandomFood(currentTier);
+    currentTier = FOOD_ITEMS[selectedFood].tier;
     foodCost = FOOD_ITEMS[selectedFood].cost;
 
     // If too expensive, try a lower tier
