@@ -37,6 +37,9 @@ export const handleMeditate = (
     ? currentTime - pet.lastRest.getTime()
     : MEDITATION_COOLDOWN;
   console.log("timeSinceLastMeditate", timeSinceLastMeditate);
+  console.log("MEDITATION_COOLDOWN", MEDITATION_COOLDOWN);
+  console.log("pet.lastRest", pet.lastRest?.getTime());
+  console.log("currentTime", currentTime);
 
   // Calculate effectiveness multiplier (0.1 to 1.0 based on cooldown)
   const effectivenessMultiplier = Math.min(
